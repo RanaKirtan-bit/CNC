@@ -56,7 +56,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Create Customer''s account',
-                style: TextStyle(fontSize: 20,
+                style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.pink.shade900,
+                  fontWeight: FontWeight.bold,
                 ),
                 ),
                 Padding(
@@ -161,7 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width -40,height: 50, decoration: BoxDecoration(
-                          color: Colors.deepPurple.shade500,
+                      color: Colors.deepOrange.shade700,
                           borderRadius: BorderRadius.circular(10),
 
                     ),
@@ -170,10 +173,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: _isLoading ? CircularProgressIndicator(
                               color: Colors.indigoAccent.shade700,
                         ): Text('Register',
-                          style: TextStyle(color: Colors.deepOrange,
+                          style: TextStyle(
+                            color: Colors.white,
                               fontSize: 19,
                               fontWeight: FontWeight.bold,
-                              letterSpacing: 4,
+                              letterSpacing: 5,
                           ),
                         ),
                       ),

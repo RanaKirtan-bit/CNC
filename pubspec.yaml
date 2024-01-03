@@ -101,7 +101,7 @@ flutter:
       fonts:
         - asset: assets/fonts/GemunuLibre-VariableFont_wght.ttf
 
-          weight: 700
+          weight: 900
 
   #
   # For details regarding fonts from package dependencies,

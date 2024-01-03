@@ -51,8 +51,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   'Login Costomer''s account',
                   style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.pink.shade900,
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
                   ),
 
                 ),
@@ -128,7 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text('Login',
                        style: TextStyle(
                          letterSpacing: 5,
+                         fontSize: 19,
                          color: Colors.white,
+                         fontWeight: FontWeight.bold,
                        ),
                       ),
                     ),
