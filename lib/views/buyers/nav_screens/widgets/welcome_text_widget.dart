@@ -1,13 +1,12 @@
 
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class WelcomeText extends StatelessWidget {
-  const WelcomeText({
+   const WelcomeText({
     super.key,
   });
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -16,11 +15,11 @@ class WelcomeText extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-           Text('Kirtan, What Are You\n Looking For 👀 ',
-            style: TextStyle(fontSize: 22,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Semi-Bold',
-            ),
+             Text('Hey, What Are You\n Looking For 👀 ',
+              style: TextStyle(fontSize: 22,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Semi-Bold',
+              ),
           ),
           Container(
             child: SvgPicture.asset('assets/images/shopping_cart.svg',
@@ -32,3 +31,4 @@ class WelcomeText extends StatelessWidget {
     );
   }
 }
+

@@ -1,9 +1,5 @@
 import 'package:clickncart/views/buyers/auth/login_screen.dart';
-import 'package:clickncart/views/buyers/auth/register_screen.dart';
-import 'package:clickncart/views/buyers/main_screen.dart';
-import 'package:clickncart/views/buyers/nav_screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:clickncart/main.dart';
 class Splash extends StatefulWidget {
   const Splash({super.key});
 
@@ -19,7 +15,7 @@ class _SplashState extends State<Splash> {
   }
 
   _navigatehome() async {
-    await Future.delayed(Duration(seconds: 3), ()  {} );
+    await Future.delayed(Duration(seconds: 1), ()  {} );
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

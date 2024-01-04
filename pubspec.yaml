@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^11.5.6
   image_picker: ^1.0.5
   cached_network_image: ^3.3.0
+  dots_indicator: ^3.0.0
 
 
 
@@ -90,10 +91,10 @@ flutter:
         - asset: assets/fonts/Kalnia-VariableFont_wdth,wght.ttf
           weight: 700
 
-    - family: Amazing
+    - family: Play
       fonts:
-            - asset: assets/fonts/amazing.ttf
-              weight: 700
+            - asset: assets/fonts/Play.ttf
+
 
 
 
