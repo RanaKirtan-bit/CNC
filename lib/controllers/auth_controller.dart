@@ -39,7 +39,7 @@ class AuthController{
           }
         }
         catch(e) {
-          res = e.toString();
+          res = 'PLEASE PROVIDE CORRECT DETAILS';
         }
         return res;
   }
@@ -56,8 +56,30 @@ class AuthController{
                 res = 'Something went wrong';
           }
       } catch (e) {
-        res = e.toString();
+        res = 'PLEASE PROVIDE VALID EMAIL OR PASSWORD';
       }
           return res;
   }
+
+  Future<void> logOutAndDeleteData() async {
+    try {
+      // Get the current user
+      User? user = _auth.currentUser;
+
+      // Sign out the user
+      await _auth.signOut();
+
+      // Delete user data from Firestore
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).delete();
+        print('User data deleted successfully');
+      }
+
+      print('User logged out successfully');
+    } catch (e) {
+      print('Error logging out: $e');
+    }
+  }
 }
+
+

@@ -1,4 +1,5 @@
 import 'package:clickncart/views/buyers/auth/login_screen.dart';
+import 'package:clickncart/views/buyers/nav_screens/category_screen.dart';
 import 'package:flutter/material.dart';
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -15,11 +16,11 @@ class _SplashState extends State<Splash> {
   }
 
   _navigatehome() async {
-    await Future.delayed(Duration(seconds: 1), ()  {} );
+    await Future.delayed(Duration(seconds: 2), ()  {} );
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => LoginScreen(
+        builder: (context) => CategoryScreen(
 
         ),
       ),);

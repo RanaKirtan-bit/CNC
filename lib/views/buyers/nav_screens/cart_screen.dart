@@ -13,6 +13,9 @@ class CartScreen extends StatelessWidget {
                     begin: FractionalOffset(0.5, 0.7),
                   )
               ),
+              child: Center(
+                child: Text('Cart screen'),
+              ),
             ),
     );
   }
