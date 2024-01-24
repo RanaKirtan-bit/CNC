@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseService {
-        CollectionReference mainCart = FirebaseFirestore.instance.collection(
+  CollectionReference categories = FirebaseFirestore.instance.collection(
+      'categorise');
+  CollectionReference mainCategorise = FirebaseFirestore.instance.collection(
             'mainCategorise');
-        CollectionReference subCart = FirebaseFirestore.instance.collection('subCategorise');
-
+        CollectionReference subCategories = FirebaseFirestore.instance.collection('subCategorise');
+/*
        Future<List<String>> getMainCategories() async {
                 QuerySnapshot querySnapshot = await mainCart.get();
                 List<String> categories = querySnapshot.docs.map((
@@ -20,5 +22,7 @@ class FirebaseService {
                 querySnapshot.docs.map((doc) => doc['subCartName'] as String).toList();
                 return subCategories;
         }
+*/
 }
+
 
