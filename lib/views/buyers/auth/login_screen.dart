@@ -5,6 +5,9 @@ import 'package:clickncart/utils/show_snackBar.dart';
 import 'package:clickncart/views/buyers/auth/register_screen.dart';
 import 'package:clickncart/views/buyers/main_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/forgot_password.dart';
+import 'package:clickncart/views/seller/seller_auth/login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,11 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   late String email;
 
   late String password;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   _loginUsers() async{
         if(_formKey.currentState!.validate()) {
                 String res = await _authController.loginUsers(email, password);
-
+                var userDoc = await _firestore.collection('buyers').doc(_auth.currentUser!.uid).get();
                 if (res == 'success' ) {
                   return Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (BuildContext context) {
@@ -55,6 +60,24 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 180.0),
+                    child: TextButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return LoginSellerScreen();
+                      }));
+                },
+                      child: Text(
+                        'Become a Seller',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade900,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
                   Text(
                     'Login Costomer''s account',
                     style: TextStyle(

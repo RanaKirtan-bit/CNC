@@ -45,34 +45,21 @@ class AuthController{
   }
 
   loginUsers(String email, String password) async {
-    String res = 'Error Occurred';
+      String res = 'Error Occurred';
 
-    try {
-      if (email.isNotEmpty && password.isNotEmpty) {
-        UserCredential credential =
-        await _auth.signInWithEmailAndPassword(email: email, password: password);
+      try {
+          if (email.isNotEmpty && password.isNotEmpty) {
+                await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-        // Check user role before allowing login
-        DocumentSnapshot userDoc =
-        await _firestore.collection('buyers').doc(credential.user!.uid).get();
-
-        if (userDoc.exists) {
-          // This is a buyer's account
-          res = 'success';
-        } else {
-          // This is not a buyer's account, handle accordingly
-          await _auth.signOut(); // Sign out the user if not a buyer
-          res = 'Invalid credentials for buyer';
-        }
-      } else {
-        res = 'Something went wrong';
+                res = 'success';
+          } else {
+                res = 'Something went wrong';
+          }
+      } catch (e) {
+        res = 'PLEASE PROVIDE VALID EMAIL OR PASSWORD';
       }
-    } catch (e) {
-      res = 'PLEASE PROVIDE VALID EMAIL OR PASSWORD';
-    }
-    return res;
+          return res;
   }
-
 
   Future<void> logOutAndDeleteData() async {
     try {

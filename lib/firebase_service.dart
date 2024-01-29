@@ -6,6 +6,7 @@ class FirebaseService {
   CollectionReference mainCategorise = FirebaseFirestore.instance.collection(
             'mainCategorise');
         CollectionReference subCategories = FirebaseFirestore.instance.collection('subCategorise');
+
 /*
        Future<List<String>> getMainCategories() async {
                 QuerySnapshot querySnapshot = await mainCart.get();

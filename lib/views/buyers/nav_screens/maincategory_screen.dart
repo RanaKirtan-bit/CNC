@@ -28,15 +28,13 @@ class _CustomerMainCategoryScreenState extends State<CustomerMainCategoryScreen>
         query: mainCategoryCollection(widget.selectedCart),
         itemBuilder: (context, snapshot) {
           MainCategory mainCategory = snapshot.data();
-          return SingleChildScrollView(
-            child: ExpansionTile(
-              title: Text(mainCategory.mainCategory!),
-              children: [
-                SubCategoryScreen(
-                  selectedSubCart: mainCategory.mainCategory,
-                ),
-              ],
-            ),
+          return ExpansionTile(
+            title: Text(mainCategory.mainCategory!),
+            children: [
+              SubCategoryScreen(
+                selectedSubCart: mainCategory.mainCategory,
+              ),
+            ],
           );
         },
       ),

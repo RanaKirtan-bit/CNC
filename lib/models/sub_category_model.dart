@@ -27,7 +27,7 @@ class SubCategory {
 }
 FirebaseService _service = FirebaseService();
 subCategoryCollection({selectedSubCart}){
-  return _service.subCategories.where('active', isEqualTo: true).where('subCartName', isEqualTo: selectedSubCart).withConverter<SubCategory>(
+  return _service.subCategories.where('active', isEqualTo: true).where('mainCategory', isEqualTo: selectedSubCart).withConverter<SubCategory>(
       fromFirestore: (snapshot, _) => SubCategory.fromJson(snapshot.data()!),
   toFirestore: (movie, _) => movie.toJson(),
   );

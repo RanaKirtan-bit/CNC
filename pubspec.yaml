@@ -47,6 +47,8 @@ dependencies:
   dots_indicator: ^3.0.0
   flutter_iconly:
   sign_in_with_apple:
+  email_validator: ^2.1.17
+  csc_picker: ^0.2.7
 
 
 

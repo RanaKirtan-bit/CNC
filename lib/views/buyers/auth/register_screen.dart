@@ -49,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xFFA6F1DF),Color(0xFFFFBBBB)],
               begin: FractionalOffset(0.5, 0.7),
@@ -183,7 +183,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                           child: _isLoading ? CircularProgressIndicator(
                                 color: Colors.indigoAccent.shade700,
-                          ): Text('Register',
+                          ): const Text('Register',
                             style: TextStyle(
                               color: Colors.white,
                                 fontSize: 19,
