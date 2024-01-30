@@ -1,5 +1,6 @@
 
 import 'package:clickncart/firebase_options.dart';
+import 'package:clickncart/provider/product_provider.dart';
 import 'package:clickncart/provider/seller_provider.dart';
 import 'package:clickncart/views/buyers/nav_screens/home_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/splash.dart';
@@ -16,10 +17,12 @@ void main() async {
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
   );
+  Provider.debugCheckInvalidValueType = null;
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SellerProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
         // Add other providers if needed
       ],
       child: MyApp(),
