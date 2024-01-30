@@ -1,9 +1,13 @@
 
 import 'package:clickncart/firebase_options.dart';
+import 'package:clickncart/provider/seller_provider.dart';
+import 'package:clickncart/views/buyers/nav_screens/home_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/splash.dart';
+import 'package:clickncart/views/seller/seller_screens/landing.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -12,7 +16,15 @@ void main() async {
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp( const  MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SellerProvider()),
+        // Add other providers if needed
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,14 +34,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    var id;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.indigo,
         fontFamily: 'Play',
       ),
       home: Splash(),
+      routes: {
+              //SellerHome.id: (context) => SellerHome(),
+
+      },
     );
   }
 }

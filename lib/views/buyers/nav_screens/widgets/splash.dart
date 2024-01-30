@@ -2,6 +2,8 @@ import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/category_screen.dart';
 import 'package:clickncart/views/seller/seller_auth/login_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../../../seller/seller_screens/vendor_home.dart';
 class Splash extends StatefulWidget {
   const Splash({super.key});
 

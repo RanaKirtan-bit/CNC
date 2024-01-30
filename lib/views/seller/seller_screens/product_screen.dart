@@ -2,22 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../seller_widget/custom_drawer.dart';
 
-class SellerHome extends StatelessWidget {
-  static const String id = 'seller_Home';
-
-  const SellerHome({super.key});
+class ProductScreen extends StatelessWidget {
+  const ProductScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
       appBar: AppBar(
+        title: Text('Product Screen'),
         elevation: 0,
-        title: Text('Dashboard'),
       ),
       drawer: CustomDrawer(),
-
-      body: Center(child: Text('Dashboard', style: TextStyle(fontSize: 22),),),
-
+      body: Center(child: Text('Product Screen'),),
     );
   }
 }
