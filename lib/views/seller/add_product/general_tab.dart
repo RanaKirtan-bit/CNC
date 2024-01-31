@@ -21,7 +21,11 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
   String? mainCategory;
   String? subCategory;
   String? taxStatus;
-  Widget _formField({String? label, TextInputType? inputType, void Function(String)? onChanged}) {
+  String? taxAmount;
+  bool _salesPrice = false;
+
+
+  Widget _formField({String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine,int? maxLine }) {
     return TextFormField(
       keyboardType: inputType,
       decoration: InputDecoration(
@@ -33,6 +37,8 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
         }
       },
       onChanged: onChanged,
+      minLines: minLine,
+      maxLines: maxLine,
     );
   }
 
@@ -48,7 +54,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
           selectedCategory = value;
           mainCategory = null; // Reset mainCategory when category changes
           subCategory = null; // Reset subCategory when category changes
-          provider.gerFormData();
+          provider.gerFormData(category: value);
         });
       },
       items: _categories
@@ -95,6 +101,36 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
     );
   }
 
+  Widget _taxAmountDropdownButton(ProductProvider provider) {
+    return DropdownButtonFormField<String>(
+      value: taxAmount,
+      hint: const Text('Tax Amount', style: TextStyle(fontSize: 16)),
+      icon: const Icon(Icons.arrow_drop_down),
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      onChanged: (String? value) {
+        setState(() {
+          taxAmount = value! ;
+          provider.gerFormData(
+            taxPercentage: taxAmount == 'GST-10%'  ? 10 : 12,
+          );
+        });
+      },
+      items: ['GST-10%', 'GST-12%']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      })
+          .toList(),
+      validator: (value) {
+        return 'Select Tax Status';
+      },
+    );
+  }
+
+
   @override
   void initState() {
     getCategories();
@@ -120,12 +156,25 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
           padding: const EdgeInsets.all(20.0),
           child: ListView(
             children: [
+
               _formField(
                 label: 'Enter Product Name',
                 inputType: TextInputType.name,
                 onChanged: (value) {
                   provider.gerFormData(
                     productName: value,
+                  );
+                },
+              ),
+
+              _formField(
+                label: 'Enter Description ',
+                inputType: TextInputType.multiline,
+                maxLine: 10,
+                minLine: 2,
+                onChanged: (value) {
+                  provider.gerFormData(
+                    description: value,
                   );
                 },
               ),
@@ -209,15 +258,59 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                 label: 'Sales Price(\$)',
                 inputType: TextInputType.number,
                 onChanged: (value) {
-                  provider.gerFormData(
-                    salesPrice: int.parse(value),
-                  );
+                  setState(() {
+                    provider.gerFormData(
+                      salesPrice: int.parse(value),
+                    );
+                    _salesPrice = true;
+                  });
                 },
               ),
-              SizedBox(height: 30,),
-              _taxStatusDropdownButton(provider)
+              if (_salesPrice)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        DateTime? selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(5000),
+                        );
+                        if (selectedDate != null) {
+                          setState(() {
+                            provider.gerFormData(
+                              scheduleDate: selectedDate,
+                            );
+                          });
+                        }
+                      },
+                      child: Text(
+                        'Schedule',
+                        style: TextStyle(
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                    if (provider.productData!['scheduleDate'] != null)
+
+                      Text(
+                        _service.formatedDate(provider.productData!['scheduleDate']),
+                      ),
+
+
+                  ],
+                ),
+              const SizedBox(height: 30,),
+
+              _taxStatusDropdownButton(provider),
+              if(taxStatus=='Taxable')
+              _taxAmountDropdownButton(provider),
+
             ],
           ),
+
         );
       },
     );

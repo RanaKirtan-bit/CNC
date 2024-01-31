@@ -1,10 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductProvider with ChangeNotifier{
   Map<String, dynamic>? productData = {};
 
-  gerFormData({String? productName, int? regularPrice, int? salesPrice, String? taxStatus, String? taxPercentage,String? category,String? mainCategory,String? subCategory}){
+  gerFormData({String? productName, int? regularPrice, int? salesPrice, String? taxStatus, double? taxPercentage,String? category,String? mainCategory,String? subCategory, String? description, DateTime? scheduleDate}){
 
         if(productName!=null) {
           productData! ['productName'] = productName;
@@ -22,7 +24,7 @@ class ProductProvider with ChangeNotifier{
           productData! [' taxValue '] = taxPercentage;
         }
         if(category!=null){
-          productData! [' category '] = category;
+          productData! ['category'] = category;
         }
         if(mainCategory!=null){
           productData! [' mainCategory '] = mainCategory;
@@ -30,7 +32,12 @@ class ProductProvider with ChangeNotifier{
         if(subCategory!=null){
           productData! [' subCategory '] = subCategory;
         }
-
+        if(description!=null){
+          productData! [' description '] = description;
+        }
+        if(scheduleDate!=null){
+          productData! ['scheduleDate'] = scheduleDate;
+        }
         notifyListeners();
 
   }

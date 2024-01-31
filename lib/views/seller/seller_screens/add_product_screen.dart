@@ -59,9 +59,9 @@ class AddProductScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                   onPressed: (){
-                        print(_provider.productData!['productName']);
-                        print(_provider.productData![' regularPrice ']);
-                        print(_provider.productData![' salesPrice ']);
+                        print(_provider.productData);
+                        print('Category: ${_provider.productData!['category']}');
+
                   },
                   child: Text(
                       'SAVE PRODUCT'

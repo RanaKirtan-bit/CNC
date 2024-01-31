@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:intl/intl.dart';
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference categories = FirebaseFirestore.instance.collection(
@@ -33,6 +33,12 @@ class FirebaseService {
       print("Error fetching seller data by ID: $error");
       throw error;
     }
+  }
+
+  String formatedDate(DateTime date){
+        var outputFormat = DateFormat('dd/MM/yyyy hh:mm aa');
+        var outputDate = outputFormat.format(date);
+        return outputDate;
   }
 
 }
