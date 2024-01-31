@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 class ProductProvider with ChangeNotifier{
   Map<String, dynamic>? productData = {};
 
-  gerFormData({String? productName, int? regularPrice, int? salesPrice, String? taxStatus, String? taxPercentage,String? category}){
+  gerFormData({String? productName, int? regularPrice, int? salesPrice, String? taxStatus, String? taxPercentage,String? category,String? mainCategory,String? subCategory}){
 
         if(productName!=null) {
           productData! ['productName'] = productName;
@@ -24,7 +24,12 @@ class ProductProvider with ChangeNotifier{
         if(category!=null){
           productData! [' category '] = category;
         }
-
+        if(mainCategory!=null){
+          productData! [' mainCategory '] = mainCategory;
+        }
+        if(subCategory!=null){
+          productData! [' subCategory '] = subCategory;
+        }
 
         notifyListeners();
 
