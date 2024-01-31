@@ -1,5 +1,4 @@
 import 'package:clickncart/firebase_service.dart';
-import 'package:clickncart/models/main_category_model.dart';
 import 'package:clickncart/provider/product_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,8 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
   final List<String> _categories = [];
   String? selectedCategory;
   String? mainCategory;
-
+  String? subCategory;
+  String? taxStatus;
   Widget _formField({String? label, TextInputType? inputType, void Function(String)? onChanged}) {
     return TextFormField(
       keyboardType: inputType,
@@ -46,6 +46,8 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
       onChanged: (String? value) {
         setState(() {
           selectedCategory = value;
+          mainCategory = null; // Reset mainCategory when category changes
+          subCategory = null; // Reset subCategory when category changes
           provider.gerFormData();
         });
       },
@@ -59,6 +61,36 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
           .toList(),
       validator: (value) {
         return 'Select Category';
+      },
+    );
+  }
+
+
+  Widget _taxStatusDropdownButton(ProductProvider provider) {
+    return DropdownButtonFormField<String>(
+      value: taxStatus,
+      hint: const Text('Tax Status', style: TextStyle(fontSize: 16)),
+      icon: const Icon(Icons.arrow_drop_down),
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      onChanged: (String? value) {
+        setState(() {
+          taxStatus = value;
+          provider.gerFormData(
+            taxStatus: value,
+          );
+        });
+      },
+      items: ['Taxable', 'Non-Taxable']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      })
+          .toList(),
+      validator: (value) {
+        return 'Select Tax Status';
       },
     );
   }
@@ -97,6 +129,8 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                   );
                 },
               ),
+
+              SizedBox(height: 30,),
               _categoryDropdownButton(provider),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -106,26 +140,60 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                     Text(mainCategory == null ? 'Select mainCategory' : mainCategory!,
                       style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
                     ),
-                    if(selectedCategory!=null)
-                    InkWell(
-                      onTap: () {
-                        showDialog(context: context, builder: (context) {
-                          return MainCategoryList(
-                            selectedCategory: selectedCategory,
-                            provider: provider,
-                            onMainCategorySelected: (selectedMainCategory) {
-                              setState(() {
-                                mainCategory = selectedMainCategory;
-                              });
-                            },
-                          );
-                        });
-                      },
-                      child: const Icon(Icons.arrow_drop_down),
-                    ),
+                    if (selectedCategory != null)
+                      InkWell(
+                        onTap: () {
+                          showDialog(context: context, builder: (context) {
+                            return MainCategoryList(
+                              selectedCategory: selectedCategory,
+                              provider: provider,
+                              onMainCategorySelected: (selectedMainCategory) {
+                                setState(() {
+                                  mainCategory = selectedMainCategory;
+                                  subCategory = null; // Reset subCategory when mainCategory changes
+                                });
+                              },
+                            );
+                          });
+                        },
+                        child: const Icon(Icons.arrow_drop_down),
+                      ),
                   ],
                 ),
               ),
+
+              if (mainCategory != null) ...[
+                Divider(color: Colors.black),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(subCategory == null ? 'Select SubCategory' : subCategory!,
+                        style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                      ),
+                      if (selectedCategory != null)
+                        InkWell(
+                          onTap: () {
+                            showDialog(context: context, builder: (context) {
+                              return SubCategoryList(
+                                selectedCategory: selectedCategory,
+                                selectedMainCategory: mainCategory,
+                                provider: provider,
+                                onSubCategorySelected: (selectedSubCategory) {
+                                  setState(() {
+                                    subCategory = selectedSubCategory;
+                                  });
+                                },
+                              );
+                            });
+                          },
+                          child: const Icon(Icons.arrow_drop_down),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
               Divider(color: Colors.black),
               _formField(
                 label: 'Regular Price(\$)',
@@ -136,6 +204,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                   );
                 },
               ),
+              SizedBox(height: 30,),
               _formField(
                 label: 'Sales Price(\$)',
                 inputType: TextInputType.number,
@@ -145,6 +214,8 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                   );
                 },
               ),
+              SizedBox(height: 30,),
+              _taxStatusDropdownButton(provider)
             ],
           ),
         );
@@ -191,6 +262,66 @@ class _MainCategoryListState extends State<MainCategoryList> {
                   Navigator.pop(context); // Close the dialog
                 },
                 title: Text(snapshot.data!.docs[index]['mainCategory']),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class SubCategoryList extends StatefulWidget {
+  final String? selectedCategory;
+  final String? selectedMainCategory;
+  final ProductProvider? provider;
+  final void Function(String)? onSubCategorySelected;
+
+  const SubCategoryList({
+    Key? key,
+    this.selectedCategory,
+    this.selectedMainCategory,
+    this.provider,
+    this.onSubCategorySelected,
+  }) : super(key: key);
+
+  @override
+  State<SubCategoryList> createState() => _SubCategoryListState();
+}
+
+class _SubCategoryListState extends State<SubCategoryList> {
+  @override
+  Widget build(BuildContext context) {
+    FirebaseService _service = FirebaseService();
+    return Dialog(
+      child: FutureBuilder<QuerySnapshot>(
+        future: _service.subCategories
+            .where('mainCategory', isEqualTo: widget.selectedMainCategory)
+            .get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            print("Error fetching subCategories: ${snapshot.error}");
+            return Center(child: Text('Error loading subCategories'));
+          }
+          if (snapshot.data!.size == 0) {
+            print("No Subcategories found.");
+            return Center(child: Text('No Subcategories'));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.size,
+            itemBuilder: (context, index) {
+              return ListTile(
+                onTap: () {
+                  widget.provider!.gerFormData(
+                    subCategory: snapshot.data!.docs[index]['subCartName'],
+                  );
+                  widget.onSubCategorySelected!(snapshot.data!.docs[index]['subCartName']);
+                  Navigator.pop(context); // Close the dialog
+                },
+                title: Text(snapshot.data!.docs[index]['subCartName']),
               );
             },
           );
