@@ -1,5 +1,8 @@
 import 'package:clickncart/provider/product_provider.dart';
+import 'package:clickncart/views/seller/add_product/attribute_tab.dart';
 import 'package:clickncart/views/seller/add_product/general_tab.dart';
+import 'package:clickncart/views/seller/add_product/inventory_tab.dart';
+import 'package:clickncart/views/seller/add_product/shipping_tab.dart';
 import 'package:clickncart/views/seller/seller_widget/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +14,7 @@ class AddProductScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final _provider = Provider.of<ProductProvider>(context);
     return  DefaultTabController(
-      length: 5,
+      length: 6,
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
@@ -34,6 +37,10 @@ class AddProductScreen extends StatelessWidget {
               ),
 
               Tab(
+                child: Text('Attributes'),
+              ),
+
+              Tab(
                 child: Text('Linked Products'),
               ),
 
@@ -48,8 +55,9 @@ class AddProductScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             GeneralTab(),
-            Center(child: Text('Inventory '),),
-            Center(child: Text('Shipping'),),
+            InventoryTab(),
+            ShippingTab(),
+            AttributeTab(),
             Center(child: Text('Linked Products'),),
             Center(child: Text('Images'),),
           ],

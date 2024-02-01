@@ -25,22 +25,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
   bool _salesPrice = false;
 
 
-  Widget _formField({String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine,int? maxLine }) {
-    return TextFormField(
-      keyboardType: inputType,
-      decoration: InputDecoration(
-        labelText: label,
-      ),
-      validator: (value) {
-        if (value!.isEmpty) {
-          return label;
-        }
-      },
-      onChanged: onChanged,
-      minLines: minLine,
-      maxLines: maxLine,
-    );
-  }
+
 
   Widget _categoryDropdownButton(ProductProvider provider) {
     return DropdownButtonFormField<String>(
@@ -157,7 +142,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
           child: ListView(
             children: [
 
-              _formField(
+              _service.formField(
                 label: 'Enter Product Name',
                 inputType: TextInputType.name,
                 onChanged: (value) {
@@ -167,7 +152,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                 },
               ),
 
-              _formField(
+              _service.formField(
                 label: 'Enter Description ',
                 inputType: TextInputType.multiline,
                 maxLine: 10,
@@ -244,7 +229,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                 ),
               ],
               Divider(color: Colors.black),
-              _formField(
+              _service.formField(
                 label: 'Regular Price(\$)',
                 inputType: TextInputType.number,
                 onChanged: (value) {
@@ -254,7 +239,7 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                 },
               ),
               SizedBox(height: 30,),
-              _formField(
+              _service.formField(
                 label: 'Sales Price(\$)',
                 inputType: TextInputType.number,
                 onChanged: (value) {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -39,6 +40,24 @@ class FirebaseService {
         var outputFormat = DateFormat('dd/MM/yyyy hh:mm aa');
         var outputDate = outputFormat.format(date);
         return outputDate;
+  }
+
+
+  Widget formField({String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine,int? maxLine }) {
+    return TextFormField(
+      keyboardType: inputType,
+      decoration: InputDecoration(
+        labelText: label,
+      ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return label;
+        }
+      },
+      onChanged: onChanged,
+      minLines: minLine,
+      maxLines: maxLine,
+    );
   }
 
 }
