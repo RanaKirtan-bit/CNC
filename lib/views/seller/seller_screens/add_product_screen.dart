@@ -76,7 +76,7 @@ class AddProductScreen extends StatelessWidget {
                       _services.scaffold(context, 'Images not selected');
                     } else {
                       await _provider.saveProduct();
-                      _services.scaffold(context, 'Product saved!');  // Optionally display a success message
+                      _services.scaffold(context, 'Product saved!'); // Optionally display a success message
                     }
                   },
                   child: Text('SAVE PRODUCT'),

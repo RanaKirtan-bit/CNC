@@ -1,6 +1,8 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +15,17 @@ class ProductProvider with ChangeNotifier{
   };
   final List<XFile>? imageFiles = [];
 
-
   Future<void> saveProduct() async {
     try {
+      // Upload images to Firebase Storage
+      List<String> imageUrls = await _uploadImages();
+
+      // Add image URLs to product data
+      productData!['imageUrls'] = imageUrls;
+
+      // Save product data to Firestore
       await _firestore.collection('products').add(productData!);
+
       // Reset the form or clear the data in productData
       productData!.clear();
       // Notify listeners that the data has changed
@@ -27,7 +36,29 @@ class ProductProvider with ChangeNotifier{
     }
   }
 
+  Future<List<String>> _uploadImages() async {
+    List<String> imageUrls = [];
 
+    for (XFile imageFile in imageFiles!) {
+      File file = File(imageFile.path);
+
+      // Generate a unique filename for each image
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Upload image to Firebase Storage
+      Reference storageReference =
+      FirebaseStorage.instance.ref().child('product_images/$fileName');
+      UploadTask uploadTask = storageReference.putFile(file);
+
+      await uploadTask.whenComplete(() async {
+        // Get the download URL for the uploaded image
+        String imageUrl = await storageReference.getDownloadURL();
+        imageUrls.add(imageUrl);
+      });
+    }
+
+    return imageUrls;
+  }
   gerFormData(
       {
                   String? productName,

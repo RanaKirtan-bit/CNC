@@ -56,7 +56,7 @@ class FirebaseService {
   }
 
 
-  Widget formField({String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine,int? maxLine }) {
+  Widget formField({String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine,int? maxLine}) {
     return TextFormField(
       keyboardType: inputType,
       decoration: InputDecoration(
