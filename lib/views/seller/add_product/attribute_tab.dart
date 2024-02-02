@@ -9,14 +9,19 @@ class AttributeTab extends StatefulWidget {
   State<AttributeTab> createState() => _AttributeTabState();
 }
 
-class _AttributeTabState extends State<AttributeTab> {
+class _AttributeTabState extends State<AttributeTab>with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
-  List<String> _sizeList = [];
+  final List<String> _sizeList = [];
   final _sizeText = TextEditingController();
   bool? _saved = false;
   bool _entered = false;
 
-  Widget _formField({String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine,int? maxLine }) {
+
+
+  Widget _formField(
+      {String? label, TextInputType? inputType, void Function(String)? onChanged, int? minLine, int? maxLine }) {
     return TextFormField(
       keyboardType: inputType,
       decoration: InputDecoration(
@@ -33,11 +38,12 @@ class _AttributeTabState extends State<AttributeTab> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
 
-
-    return Consumer <ProductProvider> (builder: (context,provider,_){
+    return Consumer <ProductProvider>(builder: (context, provider, _) {
       return Padding(
         padding: const EdgeInsets.all(20.0),
         child: ListView(
@@ -45,10 +51,10 @@ class _AttributeTabState extends State<AttributeTab> {
             _formField(
                 label: 'Brand',
                 inputType: TextInputType.text,
-                onChanged: (value){
-                      provider.gerFormData(
-                        brand: value,
-                      );
+                onChanged: (value) {
+                  provider.gerFormData(
+                    brand: value,
+                  );
                 }
             ),
             Row(
@@ -57,10 +63,10 @@ class _AttributeTabState extends State<AttributeTab> {
                   child: TextFormField(
                     controller: _sizeText,
                     decoration: InputDecoration(
-                          label: Text('Size')
+                        label: Text('Size')
                     ),
-                    onChanged: (value){
-                      if(value.isNotEmpty){
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
                         setState(() {
                           _entered = true;
                         });
@@ -69,67 +75,86 @@ class _AttributeTabState extends State<AttributeTab> {
                   ),
                 ),
                 if(_entered)
-                ElevatedButton(
-                  child: Text('Add'),
-                  onPressed: (){
+                  ElevatedButton(
+                    child: Text('Add'),
+                    onPressed: () {
                       setState(() {
                         _sizeList.add(_sizeText.text);
                         _sizeText.clear();
+                        _entered = false;
+                        _saved = false;
                       });
-                  },
+                    },
                   ),
               ],
             ),
             SizedBox(height: 10,),
             if(_sizeList.isNotEmpty)
-            Container(
-              height: 80,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _sizeList.length,
-                  itemBuilder: (context,index){
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onLongPress: (){
-                          setState(() {
-                            _sizeList.removeAt(index);
-                            provider.gerFormData(
+              SizedBox(
+                height: 80,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _sizeList.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onLongPress: () {
+                            setState(() {
+                              _sizeList.removeAt(index);
+                              provider.gerFormData(
                                   sizeList: _sizeList
-                            );
-                          });
-                        },
-                        child: Container(
-                          height: 80,
-                          width: 80,
+                              );
+                            });
+                          },
+                          child: Container(
+                            height: 80,
+                            width: 80,
 
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Colors.orange.shade800,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(child: Text(_sizeList[index], style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),)),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.orange.shade800,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(child: Text(_sizeList[index],
+                                style: TextStyle(fontWeight: FontWeight.bold,
+                                    fontSize: 18),)),
+                            ),
                           ),
                         ),
-                      ),
-                    );
-              }),
-            ),
-            Text('* long press to delete', style: TextStyle(color: Colors.grey, fontSize: 12),),
-            ElevatedButton(
-                child: Text(
-                   _saved == true ? 'Saved' : 'Save',
+                      );
+                    }),
+              ),
+            if(_sizeList.isNotEmpty)
+            Column(
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('* long press to delete',
+                    style: TextStyle(color: Colors.grey, fontSize: 12),),
                 ),
-              onPressed: (){
-                  setState(() {
-                    provider.gerFormData(
-                        sizeList: _sizeList
-                    );
-                    _saved = true;
-                  });
-              },
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        child: Text(
+                          _saved == true ? 'Saved' : 'Press to Save',
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            provider.gerFormData(
+                                sizeList: _sizeList
+                            );
+                            _saved = true;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
@@ -137,3 +162,4 @@ class _AttributeTabState extends State<AttributeTab> {
     });
   }
 }
+

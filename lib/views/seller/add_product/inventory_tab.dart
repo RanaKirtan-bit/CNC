@@ -10,12 +10,17 @@ class InventoryTab extends StatefulWidget {
   State<InventoryTab> createState() => _InventoryTabState();
 }
 
-class _InventoryTabState extends State<InventoryTab> {
+class _InventoryTabState extends State<InventoryTab>  with AutomaticKeepAliveClientMixin{
+
+  @override
+  bool get wantKeepAlive => true;
+
   final FirebaseService _services = FirebaseService();
   bool? _managrInventory = false;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
 
     return Consumer<ProductProvider>(builder: (context,provider, _){
         return Padding(

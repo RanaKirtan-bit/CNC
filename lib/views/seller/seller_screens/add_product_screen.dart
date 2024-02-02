@@ -1,11 +1,14 @@
 import 'package:clickncart/provider/product_provider.dart';
 import 'package:clickncart/views/seller/add_product/attribute_tab.dart';
 import 'package:clickncart/views/seller/add_product/general_tab.dart';
+import 'package:clickncart/views/seller/add_product/images_tab.dart';
 import 'package:clickncart/views/seller/add_product/inventory_tab.dart';
 import 'package:clickncart/views/seller/add_product/shipping_tab.dart';
 import 'package:clickncart/views/seller/seller_widget/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../firebase_service.dart';
 
 class AddProductScreen extends StatelessWidget {
   const AddProductScreen({super.key});
@@ -13,6 +16,8 @@ class AddProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _provider = Provider.of<ProductProvider>(context);
+    FirebaseService _services = FirebaseService();
+
     return  DefaultTabController(
       length: 6,
       initialIndex: 0,
@@ -59,22 +64,24 @@ class AddProductScreen extends StatelessWidget {
             ShippingTab(),
             AttributeTab(),
             Center(child: Text('Linked Products'),),
-            Center(child: Text('Images'),),
+            ImagesTab(),
           ],
         ),
         persistentFooterButtons: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
-                  onPressed: (){
-                        print(_provider.productData);
-                        print('Category: ${_provider.productData!['category']}');
-
+                  onPressed: () async {
+                    if (_provider.imageFiles!.isEmpty) {
+                      _services.scaffold(context, 'Images not selected');
+                    } else {
+                      await _provider.saveProduct();
+                      _services.scaffold(context, 'Product saved!');  // Optionally display a success message
+                    }
                   },
-                  child: Text(
-                      'SAVE PRODUCT'
-                  ),
+                  child: Text('SAVE PRODUCT'),
                 ),
+
               ),
         ],
       ),

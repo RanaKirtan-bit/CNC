@@ -1,10 +1,32 @@
 import 'dart:ffi';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProductProvider with ChangeNotifier{
-  Map<String, dynamic>? productData = {};
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Map<String, dynamic>? productData = {
+    'approved' :false
+  };
+  final List<XFile>? imageFiles = [];
+
+
+  Future<void> saveProduct() async {
+    try {
+      await _firestore.collection('products').add(productData!);
+      // Reset the form or clear the data in productData
+      productData!.clear();
+      // Notify listeners that the data has changed
+      notifyListeners();
+    } catch (error) {
+      print('Error saving product: $error');
+      // Handle error as needed
+    }
+  }
+
 
   gerFormData(
       {
@@ -83,8 +105,11 @@ class ProductProvider with ChangeNotifier{
         if(sizeList!=null){
           productData! ['sizeList'] = sizeList;
         }
-
         notifyListeners();
-
   }
+  getImageFile(image){
+        imageFiles!.add(image);
+        notifyListeners();
+  }
+
 }

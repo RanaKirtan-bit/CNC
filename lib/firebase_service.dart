@@ -9,6 +9,7 @@ class FirebaseService {
             'mainCategorise');
         CollectionReference subCategories = FirebaseFirestore.instance.collection('subCategorise');
         CollectionReference sellers = FirebaseFirestore.instance.collection('sellers');
+  CollectionReference products = FirebaseFirestore.instance.collection('products');
 /*
        Future<List<String>> getMainCategories() async {
                 QuerySnapshot querySnapshot = await mainCart.get();
@@ -36,6 +37,18 @@ class FirebaseService {
     }
   }
 
+  Future<DocumentSnapshot> getProductById(String productId) async {
+    try {
+      return await _firestore.collection('products').doc(productId).get();
+    } catch (error) {
+      // Handle errors
+      print("Error fetching product data by ID: $error");
+      throw error;
+    }
+  }
+
+
+
   String formatedDate(DateTime date){
         var outputFormat = DateFormat('dd/MM/yyyy hh:mm aa');
         var outputDate = outputFormat.format(date);
@@ -58,6 +71,16 @@ class FirebaseService {
       minLines: minLine,
       maxLines: maxLine,
     );
+  }
+  scaffold(context, message){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message,),
+      action: SnackBarAction(
+        label: 'OK',
+        onPressed: (){
+          ScaffoldMessenger.of(context).clearSnackBars();
+        },
+      ),
+    ));
   }
 
 }

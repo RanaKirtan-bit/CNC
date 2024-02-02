@@ -10,11 +10,15 @@ class ShippingTab extends StatefulWidget {
   State<ShippingTab> createState() => _ShippingTabState();
 }
 
-class _ShippingTabState extends State<ShippingTab> {
+class _ShippingTabState extends State<ShippingTab> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   bool? _chargeShipping = false;
   FirebaseService _service = FirebaseService();
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer<ProductProvider>(builder: (context, provider,child){
        return Padding(
          padding: const EdgeInsets.all(20.0),
