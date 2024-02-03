@@ -23,6 +23,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => SellerProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
         // Add other providers if needed
       ],
       child: MyApp(),

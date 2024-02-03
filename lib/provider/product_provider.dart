@@ -14,7 +14,7 @@ class ProductProvider with ChangeNotifier{
     'approved' :false
   };
   final List<XFile>? imageFiles = [];
-
+  List<Map<String, dynamic>> productDataList = [];
   Future<void> saveProduct() async {
     try {
       // Upload images to Firebase Storage
@@ -143,4 +143,33 @@ class ProductProvider with ChangeNotifier{
         notifyListeners();
   }
 
+  Future<void> fetchProducts() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+      await _firestore.collection('products').get();
+
+      productDataList = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data()!;
+        data['documentId'] = doc.id; // Assuming the documentId is needed for deletion
+        return data;
+      }).toList();
+
+      notifyListeners();
+    } catch (error) {
+      print('Error fetching products: $error');
+      // Handle error as needed
+    }
+  }
+
+  Future<void> deleteProduct(int index) async {
+    try {
+      String documentId = productDataList[index]['documentId'];
+      await _firestore.collection('products').doc(documentId).delete();
+      productDataList.removeAt(index);
+      notifyListeners();
+    } catch (error) {
+      print('Error deleting product: $error');
+      // Handle error as needed
+    }
+  }
 }
