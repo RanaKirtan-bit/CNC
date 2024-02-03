@@ -24,7 +24,7 @@ class _SplashState extends State<Splash> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => LoginScreen(
+        builder: (context) => AddProductScreen(
 
         ),
       ),);
