@@ -1,5 +1,6 @@
 import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/category_screen.dart';
+import 'package:clickncart/views/buyers/nav_screens/home_screen.dart';
 import 'package:clickncart/views/seller/seller_auth/login_screen.dart';
 import 'package:clickncart/views/seller/seller_screens/add_product_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _SplashState extends State<Splash> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => AddProductScreen(
+        builder: (context) => LoginScreen(
 
         ),
       ),);
