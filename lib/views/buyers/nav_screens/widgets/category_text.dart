@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../cart_screen.dart';
+
 class CategoryText extends StatefulWidget {
   @override
   _CategoryTextState createState() => _CategoryTextState();
@@ -66,19 +68,33 @@ class _CategoryTextState extends State<CategoryText> {
                           },
                         ),
                       ),
+                      //IconButton(
+                        //onPressed: () {
+                          // Add selected products to the cart
+                          //if (selectedCategory.isNotEmpty) {
+                            //List<ProductInfo> productsToAdd = cartItems
+                              //  .where((item) => item.category == selectedCategory)
+                                //.toList();
+                            //cartItems.addAll(productsToAdd);
+                         // }
+                        //},
+                        //icon: Icon(
+                          //Icons.shopping_cart,
+                        //),
+                      //),
+                      // Add the cart icon here
                       IconButton(
                         onPressed: () {
-                          // Add selected products to the cart
-                          if (selectedCategory.isNotEmpty) {
-                            List<ProductInfo> productsToAdd = cartItems
-                                .where((item) => item.category == selectedCategory)
-                                .toList();
-                            cartItems.addAll(productsToAdd);
-                          }
+                          // Navigate to the CartScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CartScreen(cartItems: cartItems),
+                            ),
+                          );
                         },
                         icon: Icon(Icons.shopping_cart),
                       ),
-                      // Add the cart icon here
                     ],
                   ),
                 );

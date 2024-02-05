@@ -24,7 +24,7 @@ List<Widget>  _pages  =  [
   HomeScreen(),
   CategoryScreen(),
   StoreScreen(),
-  CartScreen(),
+  CartScreen(cartItems: [],),
   SearchScreen(),
   AccountScreen(),
 ];
