@@ -1,4 +1,7 @@
+//import 'package:clickncart/views/buyers/nav_screens/product_details_screen.dart';
+import 'package:clickncart/views/buyers/nav_screens/product_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../cart_screen.dart';
@@ -37,6 +40,7 @@ class _CategoryTextState extends State<CategoryText> {
                   height: 100,
                   child: Row(
                     children: [
+
                       Expanded(
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -68,33 +72,6 @@ class _CategoryTextState extends State<CategoryText> {
                           },
                         ),
                       ),
-                      //IconButton(
-                        //onPressed: () {
-                          // Add selected products to the cart
-                          //if (selectedCategory.isNotEmpty) {
-                            //List<ProductInfo> productsToAdd = cartItems
-                              //  .where((item) => item.category == selectedCategory)
-                                //.toList();
-                            //cartItems.addAll(productsToAdd);
-                         // }
-                        //},
-                        //icon: Icon(
-                          //Icons.shopping_cart,
-                        //),
-                      //),
-                      // Add the cart icon here
-                      IconButton(
-                        onPressed: () {
-                          // Navigate to the CartScreen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CartScreen(cartItems: cartItems),
-                            ),
-                          );
-                        },
-                        icon: Icon(Icons.shopping_cart),
-                      ),
                     ],
                   ),
                 );
@@ -102,9 +79,20 @@ class _CategoryTextState extends State<CategoryText> {
             },
           ),
           SizedBox(height: 20),
-          Text(
-            'Products',
-            style: TextStyle(fontSize: 19),
+          Row(
+            children: [
+              Text(
+                'Products',
+                style: TextStyle(fontSize: 19),
+              ),
+              SizedBox(width: 170,),
+              ElevatedButton(
+                onPressed: () {
+                  _viewAllProducts();
+                },
+                child: Text('View All'),
+              ),
+            ],
           ),
           // Inside your CategoryText widget
           FutureBuilder(
@@ -117,21 +105,33 @@ class _CategoryTextState extends State<CategoryText> {
               } else {
                 List<ProductInfo> products = snapshot.data ?? [];
 
-                return Wrap(
-                  spacing: 18.0, // Adjust the spacing as needed
-                  runSpacing: 18.0, // Adjust the run spacing as needed
-                  children: products.map((product) {
-                    return ProductCard(
-                      productName: product.name,
-                      imageUrls: product.imageUrls,
-                      category: product.category,
-                      addToCart: () {
-                        setState(() {
-                          cartItems.add(product);
-                        });
-                      },
-                    );
-                  }).toList(),
+                return Column(
+                  children: [
+                    Wrap(
+                      spacing: 18.0,
+                      runSpacing: 18.0,
+                      children: products.map((product) {
+                        bool isInCart = cartItems.contains(product);
+
+                        return ProductCard(
+                          id: product.id,
+                          productName: product.name,
+                          imageUrls: product.imageUrls,
+                          category: product.category,
+                          addToCart: (bool isInCart) {
+                            setState(() {
+                              if (isInCart) {
+                                cartItems.remove(product);
+                              } else {
+                                cartItems.add(product);
+                              }
+                            });
+                          },
+                          isInCart: isInCart,
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 );
               }
             },
@@ -140,6 +140,37 @@ class _CategoryTextState extends State<CategoryText> {
       ),
     );
   }
+
+
+  Future<void> _viewAllProducts() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+      await FirebaseFirestore.instance
+          .collection('products')
+          .where('approved', isEqualTo: true)
+          .get();
+
+      List<ProductInfo> allProducts = snapshot.docs.map((doc) {
+        return ProductInfo(
+          id: doc.id,
+          name: doc['productName'] as String,
+          imageUrls: List<String>.from(doc['imageUrls'] as List<dynamic>),
+          category: doc['category'] as String,
+        );
+      }).toList();
+
+      setState(() {
+        // Update the product list with all approved products
+        // and clear the selected category
+        selectedCategory = "";
+        cartItems.clear();
+      });
+
+    } catch (error) {
+      print('Error fetching all products: $error');
+    }
+  }
+
 
   Future<List<String>> _getCategories() async {
     try {
@@ -175,10 +206,13 @@ class _CategoryTextState extends State<CategoryText> {
             .where('approved', isEqualTo: true)
             .get();
       }
-
+      print('Selected Category: $category');
+      print('Document data count: ${snapshot.docs.length}');
       List<ProductInfo> products = snapshot.docs.map((doc) {
+        print('Document ID: ${doc.id}'); // Print product ID for debugging
         print('Document data: ${doc.data()}'); // Print document data for debugging
         return ProductInfo(
+          id: doc.id, // Include product ID
           name: doc['productName'] as String,
           imageUrls: List<String>.from(doc['imageUrls'] as List<dynamic>),
           category: doc['category'] as String,
@@ -194,47 +228,98 @@ class _CategoryTextState extends State<CategoryText> {
 }
 
 class ProductInfo {
+  final String id;
   final String name;
   final List<String> imageUrls;
   final String category;
 
-  ProductInfo({required this.name, required this.imageUrls, required this.category});
+  ProductInfo({
+    required this.id,
+    required this.name,
+    required this.imageUrls,
+    required this.category,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ProductInfo &&
+        other.id == id &&
+        other.name == name &&
+        other.category == category &&
+        listEquals(other.imageUrls, imageUrls);
+  }
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode ^ category.hashCode ^ imageUrls.hashCode;
 }
 
+
+
 class ProductCard extends StatelessWidget {
+  final String id;
   final String productName;
   final List<String> imageUrls;
   final String category;
-  final VoidCallback addToCart;
+  final Function(bool) addToCart;
+  final bool isInCart;
 
-  ProductCard({required this.productName, required this.imageUrls, required this.category, required this.addToCart});
+  ProductCard({
+    required this.id,
+    required this.productName,
+    required this.imageUrls,
+    required this.category,
+    required this.addToCart,
+    required this.isInCart,
+  });
+
+  void _showProductDetails(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailsScreen(productInfo: ProductInfo(
+          id: id,
+          name: productName,
+          imageUrls: imageUrls,
+          category: category,
+        )),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(
-        children: [
-          if (imageUrls.isNotEmpty) // Check if imageUrls is not empty
-            Image.network(
-              imageUrls[0], // Display the first image
-              height: 180,
-              width: 120,
-              fit: BoxFit.cover,
+      child: GestureDetector(
+        onTap: () {
+          _showProductDetails(context);
+        },
+        child: Column(
+          children: [
+            if (imageUrls.isNotEmpty)
+              Image.network(
+                imageUrls[0],
+                height: 180,
+                width: 120,
+                fit: BoxFit.cover,
+              ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                productName,
+                style: TextStyle(fontSize: 16),
+              ),
             ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              productName,
-              style: TextStyle(fontSize: 16),
+            IconButton(
+              onPressed: () {
+                addToCart(!isInCart);
+              },
+              icon: Icon(isInCart ? Icons.remove_shopping_cart : Icons.add_shopping_cart),
             ),
-          ),
-          IconButton(
-            onPressed: addToCart,
-            icon: Icon(Icons.add_shopping_cart),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-
