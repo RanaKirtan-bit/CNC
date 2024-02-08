@@ -1,8 +1,10 @@
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
 import 'package:flutter/material.dart';
 
+import '../../../models/product_model.dart';
+
 class CartScreen extends StatelessWidget {
-  final List<ProductInfo> cartItems;
+  final List<Product> cartItems;
 
   CartScreen({required this.cartItems});
 
@@ -16,7 +18,7 @@ class CartScreen extends StatelessWidget {
         itemCount: cartItems.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(cartItems[index].name),
+            //title: Text(cartItems[index].productName),
             subtitle: Text('Category: ${cartItems[index].category}'),
           );
         },

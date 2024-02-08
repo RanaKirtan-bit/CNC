@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
           ),
           SerachInputWidget(),
           BannerWidget(),
-          CategoryText(),
+          CategoryWidget(),
         ],
       ),
     );

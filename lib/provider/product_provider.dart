@@ -86,28 +86,28 @@ class ProductProvider with ChangeNotifier{
           productData! ['productName'] = productName;
         }
         if(regularPrice!=null){
-          productData! [' regularPrice '] = regularPrice;
+          productData! ['regularPrice'] = regularPrice;
         }
         if(salesPrice!=null){
-          productData! [' salesPrice '] = salesPrice;
+          productData! ['salesPrice'] = salesPrice;
         }
         if(taxStatus!=null){
-          productData! [' taxStatus '] = taxStatus;
+          productData! ['taxStatus'] = taxStatus;
         }
         if(taxPercentage!=null){
-          productData! [' taxValue '] = taxPercentage;
+          productData! ['taxValue'] = taxPercentage;
         }
         if(category!=null){
           productData! ['category'] = category;
         }
         if(mainCategory!=null){
-          productData! [' mainCategory '] = mainCategory;
+          productData! ['mainCategory'] = mainCategory;
         }
         if(subCategory!=null){
-          productData! [' subCategory '] = subCategory;
+          productData! ['subCategory'] = subCategory;
         }
         if(description!=null){
-          productData! [' description '] = description;
+          productData! ['description'] = description;
         }
         if(scheduleDate!=null){
           productData! ['scheduleDate'] = scheduleDate;
