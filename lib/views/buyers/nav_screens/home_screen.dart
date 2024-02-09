@@ -1,5 +1,7 @@
+import 'package:clickncart/controllers/auth_controller.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/banner_widget.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +11,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

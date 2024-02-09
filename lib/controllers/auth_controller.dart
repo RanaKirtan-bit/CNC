@@ -93,6 +93,64 @@ class AuthController{
       print('Error logging out: $e');
     }
   }
+
+
+
+
+  Future<User?> getCurrentUser() async {
+    try {
+      return _auth.currentUser;
+    } catch (e) {
+      print('Error getting current user: $e');
+      return null;
+    }
+  }
+
+  Future<UserDetails?> fetchUserDetails() async {
+    try {
+      User? user = await getCurrentUser();
+
+      if (user != null) {
+        DocumentSnapshot userDoc =
+        await _firestore.collection('buyers').doc(user.uid).get();
+
+        if (userDoc.exists) {
+          return UserDetails.fromSnapshot(userDoc);
+        }
+      }
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
+    return null;
+  }
 }
+
+class UserDetails {
+  final String email;
+  final String fullName;
+  final String phoneNumber;
+  final String buyerId;
+  final String address;
+
+  UserDetails({
+    required this.email,
+    required this.fullName,
+    required this.phoneNumber,
+    required this.buyerId,
+    required this.address,
+  });
+
+  factory UserDetails.fromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    return UserDetails(
+      email: data['email'] ?? '',
+      fullName: data['fullName'] ?? '',
+      phoneNumber: data['phoneNumber'] ?? '',
+      buyerId: data['buyerId'] ?? '',
+      address: data['address'] ?? '',
+    );
+  }
+}
+
 
 

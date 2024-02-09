@@ -10,7 +10,19 @@ class FirebaseService {
         CollectionReference subCategories = FirebaseFirestore.instance.collection('subCategorise');
         CollectionReference sellers = FirebaseFirestore.instance.collection('sellers');
   CollectionReference products = FirebaseFirestore.instance.collection('products');
-/*
+
+
+
+  String formatedNumber(number){
+    var f = NumberFormat('#,##,###');
+    String formattedNumber = f.format(number);
+    return formattedNumber;
+  }
+
+
+
+
+  /*
        Future<List<String>> getMainCategories() async {
                 QuerySnapshot querySnapshot = await mainCart.get();
                 List<String> categories = querySnapshot.docs.map((
