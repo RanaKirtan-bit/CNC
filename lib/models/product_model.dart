@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
-  final String? id;
+  final String id;
   final String? productName;
   final List<String>? imageUrls;
   final String? category;
@@ -23,7 +23,7 @@ class Product {
   final List<String>? sizeList;
 
   Product({
-    this.id,
+    required this.id,
     this.productName,
     this.imageUrls,
     this.category,
@@ -52,10 +52,10 @@ class Product {
       imageUrls: List<String>.from(json['imageUrls'] as List<dynamic>? ?? []),
       category: json['category'] as String? ?? '',
       brand: json['brand'] as String?,
-      regularPrice: json['regularPrice'] as int?,
-      salesPrice: json['salesPrice'] as int?,
+      regularPrice: (json['regularPrice'] as num?)?.toInt() ?? 0,
+      salesPrice: (json['salesPrice'] as num?)?.toInt(),
       taxStatus: json['taxStatus'] as String? ?? '',
-      taxPercentage: json['taxValue'] as double?,
+      taxPercentage: (json['taxValue'] as num?)?.toDouble(),
       mainCategory: json['mainCategory'] as String?,
       subCategory: json['subCategory'] as String?,
       description: json['description'] as String?,
@@ -72,6 +72,8 @@ class Product {
 
   Map<String, Object?> toJson() {
     return {
+      'id':id,
+      'brand': brand,
       'productName': productName,
       'regularPrice': regularPrice,
       'salesPrice': salesPrice,

@@ -1,47 +1,37 @@
-
-
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:clickncart/views/buyers/nav_screens/account_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/cart_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/category_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/home_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/search_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/store_screen.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import '../../controllers/auth_controller.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-int  _pageIndex = 0;
+  int _pageIndex = 0;
 
-List<Widget>  _pages  =  [
-  HomeScreen(),
-  CategoryScreen(),
-  StoreScreen(),
-  CartScreen(cartItems: [],),
-  SearchScreen(),
-  AccountScreen(),
-];
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFA6F1DF),Color(0xFFFFBBBB)],
-            begin: FractionalOffset(0.5, 0.7),
-          )
+        gradient: LinearGradient(
+          colors: [Color(0xFFA6F1DF), Color(0xFFFFBBBB)],
+          begin: FractionalOffset(0.5, 0.7),
+        ),
       ),
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _pageIndex,
-          onTap: (value){
+          onTap: (value) {
             setState(() {
               _pageIndex = value;
             });
@@ -49,35 +39,78 @@ List<Widget>  _pages  =  [
           unselectedItemColor: Colors.deepPurple,
           selectedItemColor: Colors.black,
           items: [
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.home),label:  'HOME',),
-          BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/explore.svg',
-            width: 20,
-          ),
-            label:  'CATEGORIES',
-          ),
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/shop.svg',
-              width: 20,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'HOME',
             ),
-              label:  'SHOP',
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/explore.svg',
+                width: 20,
+              ),
+              label: 'CATEGORIES',
             ),
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/shopping_cart.svg',
-              width: 20,
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/shop.svg',
+                width: 20,
+              ),
+              label: 'SHOP',
             ),
-              label:  'CART',
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/shopping_cart.svg',
+                width: 20,
+              ),
+              label: 'CART',
             ),
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/search.svg',
-              width: 20,
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/search.svg',
+                width: 20,
+              ),
+              label: 'SEARCH',
             ),
-              label:  'SEARCH',
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/images/account.svg',
+                width: 20,
+              ),
+              label: 'ACCOUNTS',
             ),
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/account.svg',
-              width: 20,
-            ),
-              label:  'ACCOUNTS',
-            ),
-        ],),
-            body: _pages [_pageIndex],
+          ],
+        ),
+        body: _buildPage(_pageIndex),
       ),
     );
+  }
+
+  Widget _buildPage(int index) {
+    switch (index) {
+      case 0:
+        return HomeScreen();
+      case 1:
+        return CategoryScreen();
+      case 2:
+        return StoreScreen();
+      case 3:
+        return FutureBuilder<UserDetails?>(
+          // Assuming you have a method to fetch user details, modify it accordingly
+          future: AuthController().fetchUserDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return CartScreen(userDetails: snapshot.data!);
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        );
+      case 4:
+        return SearchScreen();
+      case 5:
+        return AccountScreen();
+      default:
+        return Container();
+    }
   }
 }

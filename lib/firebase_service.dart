@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'models/product_model.dart';
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference categories = FirebaseFirestore.instance.collection(
@@ -95,6 +97,83 @@ class FirebaseService {
     ));
   }
 
+
+  Future<List<Product>> getCartItems(String userId) async {
+    try {
+      List<Product> cartItems = [];
+
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('buyers').doc(userId).collection('cart').get();
+
+      for (QueryDocumentSnapshot doc in snapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        Product product = Product.fromJson(data);
+        cartItems.add(product);
+      }
+
+      return cartItems;
+    } catch (error) {
+      // Handle errors
+      print('Error fetching cart items: $error');
+      throw error;
+    }
+  }
+
+  Future<void> addToCart(String buyerId, Product product) async {
+    try {
+      // ... existing code ...
+
+      // Create a new Product instance with the provided ID and additional details
+      Product productWithDetails = Product(
+        id: product.id,
+        productName: product.productName,
+        imageUrls: product.imageUrls,
+        brand: product.brand,
+        salesPrice: product.salesPrice,
+        // ... copy other properties ...
+      );
+
+      // Add the product to the cart
+      await FirebaseFirestore.instance
+          .collection('buyers')
+          .doc(buyerId)
+          .collection('cart')
+          .doc(product.id)
+          .set(productWithDetails.toJson());
+
+      print('Product added to cart. ProductId: ${product.id}');
+    } catch (e) {
+      print('Error adding product to cart: $e');
+      throw e;
+    }
+  }
+
+
+
+
+  // Inside the FirebaseService class
+  Future<void> removeFromCart(String userId, Product product) async {
+    try {
+      // Assuming 'cart' is the name of the collection storing user carts
+      // and 'items' is the name of the subcollection containing cart items
+      await FirebaseFirestore.instance
+          .collection('buyers')
+          .doc(userId)
+          .collection('cart')
+          .doc(product.id) // Assuming each product has a unique ID
+          .delete();
+
+      print('Product removed from cart: ${product.productName}');
+    } catch (e) {
+      // Handle errors
+      print('Error removing product from cart: $e');
+      throw e;
+    }
+  }
+
+
+
 }
+
+
 
 

@@ -1,6 +1,7 @@
 import 'package:clickncart/controllers/auth_controller.dart';
 import 'package:clickncart/firebase_service.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clickncart/models/product_model.dart';
@@ -51,6 +52,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     print('Regular Price: ${widget.product.regularPrice}');
     print('Product ID: ${widget.product.id}');
+    print('Brand: ${widget.product.brand}');
+
 
     return Scaffold(
       appBar: AppBar(
@@ -216,11 +219,85 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ],
               ),
             ),
+            ElevatedButton(
+              onPressed: () {
+                _addToCart();
+              },
+              child: Text('Add to Cart'),
+            ),
 
+            // Buy Now Button
+            ElevatedButton(
+              onPressed: () {
+                //_buyNow();
+              },
+              child: Text('Buy Now'),
+            ),
 
           ],
         ),
       ),
     );
   }
+
+
+   void _addToCart() async {
+     // Check if the user is logged in
+     if (_userDetails != null) {
+       try {
+         // Check if the product is already in the cart
+         List<Product> cartItems = await _service.getCartItems(_userDetails!.buyerId);
+         bool isProductInCart = cartItems.any((item) => item.id == widget.product.id);
+
+         if (isProductInCart) {
+           // Product is already in the cart, show a message
+           ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(
+               content: Text('Product is already in the cart.'),
+             ),
+           );
+         } else {
+           // Product is not in the cart, proceed to add it
+
+           // Generate a unique ID for the cart item
+           String cartItemId = FirebaseFirestore.instance.collection('buyers').doc().id;
+
+           // Create a copy of the product with the new ID and additional details
+           Product productCopy = Product(
+             id: cartItemId,
+             productName: widget.product.productName,
+             imageUrls: widget.product.imageUrls,
+             brand: widget.product.brand,
+             salesPrice: widget.product.salesPrice,
+             // ... copy other properties ...
+           );
+
+           await _service.addToCart(_userDetails!.buyerId, productCopy);
+
+           // Show a snackbar or navigate to the CartScreen
+           ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(
+               content: Text('Product added to cart!'),
+             ),
+           );
+         }
+       } catch (e) {
+         print('Error checking or adding product to cart: $e');
+       }
+     } else {
+       // User is not logged in, prompt them to log in
+       // You can show a dialog or navigate to the login screen
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('Please log in to add products to the cart.'),
+         ),
+       );
+     }
+   }
+
+
+
+
+
+
 }
