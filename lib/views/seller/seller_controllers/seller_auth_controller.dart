@@ -151,6 +151,13 @@ class SellerAuthController {
     }
   }
 
+  String? getSellerId() {
+    // Check if the user is logged in
+    if (_auths.currentUser != null) {
+      return _auths.currentUser!.uid;
+    }
+    return null;
+  }
 
 
   Future<void> logOutAndDeleteData() async {

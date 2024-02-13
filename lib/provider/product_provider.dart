@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../views/seller/seller_controllers/seller_auth_controller.dart';
+
 class ProductProvider with ChangeNotifier{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -15,6 +17,8 @@ class ProductProvider with ChangeNotifier{
   };
   final List<XFile>? imageFiles = [];
   List<Map<String, dynamic>> productDataList = [];
+
+
   Future<void> saveProduct() async {
     try {
       // Upload images to Firebase Storage
@@ -23,8 +27,15 @@ class ProductProvider with ChangeNotifier{
       // Add image URLs to product data
       productData!['imageUrls'] = imageUrls;
 
-      // Save product data to Firestore
-      await _firestore.collection('products').add(productData!);
+      // Get the seller ID of the logged-in user
+      String sellerId = SellerAuthController().getSellerId()!;
+
+      // Save product data to Firestore with the seller's ID
+      await _firestore.collection('products').add({
+        ...productData!,
+        'sellerId': sellerId,
+        'approved': false, // Assuming you want to set the initial approval status
+      });
 
       // Reset the form or clear the data in productData
       productData!.clear();
@@ -35,6 +46,7 @@ class ProductProvider with ChangeNotifier{
       // Handle error as needed
     }
   }
+
 
   Future<List<String>> _uploadImages() async {
     List<String> imageUrls = [];
@@ -145,8 +157,11 @@ class ProductProvider with ChangeNotifier{
 
   Future<void> fetchProducts() async {
     try {
+      // Get the seller ID of the logged-in user
+      String sellerId = SellerAuthController().getSellerId()!;
+
       QuerySnapshot<Map<String, dynamic>> snapshot =
-      await _firestore.collection('products').get();
+      await _firestore.collection('products').where('sellerId', isEqualTo: sellerId).get();
 
       productDataList = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data()!;
@@ -160,6 +175,7 @@ class ProductProvider with ChangeNotifier{
       // Handle error as needed
     }
   }
+
 
   Future<void> deleteProduct(int index) async {
     try {
