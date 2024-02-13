@@ -245,34 +245,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
      // Check if the user is logged in
      if (_userDetails != null) {
        try {
-         // Check if the product is already in the cart
+         // Check if the product with the same name is already in the cart
          List<Product> cartItems = await _service.getCartItems(_userDetails!.buyerId);
-         bool isProductInCart = cartItems.any((item) => item.id == widget.product.id);
+         bool isProductInCart = cartItems.any((item) => item.productName == widget.product.productName);
 
          if (isProductInCart) {
-           // Product is already in the cart, show a message
+           // Product with the same name is already in the cart, show a message
            ScaffoldMessenger.of(context).showSnackBar(
              SnackBar(
-               content: Text('Product is already in the cart.'),
+               content: Text('Product with the same name is already in the cart.'),
              ),
            );
          } else {
            // Product is not in the cart, proceed to add it
-
-           // Generate a unique ID for the cart item
-           String cartItemId = FirebaseFirestore.instance.collection('buyers').doc().id;
-
-           // Create a copy of the product with the new ID and additional details
-           Product productCopy = Product(
-             id: cartItemId,
-             productName: widget.product.productName,
-             imageUrls: widget.product.imageUrls,
-             brand: widget.product.brand,
-             salesPrice: widget.product.salesPrice,
-             // ... copy other properties ...
-           );
-
-           await _service.addToCart(_userDetails!.buyerId, productCopy);
+           await _service.addToCart(_userDetails!.buyerId, widget.product);
 
            // Show a snackbar or navigate to the CartScreen
            ScaffoldMessenger.of(context).showSnackBar(
@@ -286,7 +272,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
        }
      } else {
        // User is not logged in, prompt them to log in
-       // You can show a dialog or navigate to the login screen
        ScaffoldMessenger.of(context).showSnackBar(
          SnackBar(
            content: Text('Please log in to add products to the cart.'),
@@ -294,6 +279,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
        );
      }
    }
+
+
 
 
 

@@ -120,7 +120,13 @@ class FirebaseService {
 
   Future<void> addToCart(String buyerId, Product product) async {
     try {
-      // ... existing code ...
+      // Check if the product is already in the cart
+      bool isProductInCart = await isProductAlreadyInCart(buyerId, product.id);
+
+      if (isProductInCart) {
+        print('Product is already in the cart. ProductId: ${product.id}');
+        return; // Do not add the product again
+      }
 
       // Create a new Product instance with the provided ID and additional details
       Product productWithDetails = Product(
@@ -146,6 +152,26 @@ class FirebaseService {
       throw e;
     }
   }
+
+// Helper method to check if a product is already in the cart
+  Future<bool> isProductAlreadyInCart(String buyerId, String productId) async {
+    try {
+      // Check if the product already exists in the cart
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('buyers')
+          .doc(buyerId)
+          .collection('cart')
+          .doc(productId)
+          .get();
+
+      return documentSnapshot.exists;
+    } catch (e) {
+      // Handle errors
+      print('Error checking if product is in cart: $e');
+      throw e;
+    }
+  }
+
 
 
 
