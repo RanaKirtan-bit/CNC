@@ -128,30 +128,30 @@ class FirebaseService {
         return; // Do not add the product again
       }
 
-      // Create a new Product instance with the provided ID and additional details
-      Product productWithDetails = Product(
-        id: product.id,
-        productName: product.productName,
-        imageUrls: product.imageUrls,
-        brand: product.brand,
-        salesPrice: product.salesPrice,
-        // ... copy other properties ...
-      );
+      // Log additional information for debugging
+      print('Adding product to cart:');
+      print('Buyer ID: $buyerId');
+      print('Product ID: ${product.id}');
+      print('Product Name: ${product.productName}');
+      print('Product Price: ${product.salesPrice ?? product.regularPrice}');
 
-      // Add the product to the cart
+      // Assuming 'cart' is the name of the collection storing user carts
+      // and 'items' is the name of the subcollection containing cart items
       await FirebaseFirestore.instance
           .collection('buyers')
           .doc(buyerId)
           .collection('cart')
-          .doc(product.id)
-          .set(productWithDetails.toJson());
+          .doc(product.id) // Assuming each product has a unique ID
+          .set(product.toJson());
 
-      print('Product added to cart. ProductId: ${product.id}');
+      print('Product added to cart successfully');
     } catch (e) {
       print('Error adding product to cart: $e');
       throw e;
     }
   }
+
+
 
 // Helper method to check if a product is already in the cart
   Future<bool> isProductAlreadyInCart(String buyerId, String productId) async {

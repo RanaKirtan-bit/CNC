@@ -55,6 +55,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     print('Brand: ${widget.product.brand}');
 
 
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -245,20 +246,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
      // Check if the user is logged in
      if (_userDetails != null) {
        try {
-         // Check if the product with the same name is already in the cart
+         // Set the product ID before adding it to the cart
+         Product productToAdd = Product(
+           id: widget.productId ?? '', // Assuming widget.productId is the ID
+           productName: widget.product.productName,
+           salesPrice: widget.product.salesPrice,
+           // Copy other fields as needed
+         );
+
+         // Check if the product with the same ID is already in the cart
          List<Product> cartItems = await _service.getCartItems(_userDetails!.buyerId);
-         bool isProductInCart = cartItems.any((item) => item.productName == widget.product.productName);
+         bool isProductInCart = cartItems.any((item) => item.id == productToAdd.id);
 
          if (isProductInCart) {
-           // Product with the same name is already in the cart, show a message
+           // Product with the same ID is already in the cart, show a message
            ScaffoldMessenger.of(context).showSnackBar(
              SnackBar(
-               content: Text('Product with the same name is already in the cart.'),
+               content: Text('Product is already in the cart.'),
              ),
            );
          } else {
            // Product is not in the cart, proceed to add it
-           await _service.addToCart(_userDetails!.buyerId, widget.product);
+           await _service.addToCart(_userDetails!.buyerId, productToAdd);
 
            // Show a snackbar or navigate to the CartScreen
            ScaffoldMessenger.of(context).showSnackBar(
@@ -279,6 +288,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
        );
      }
    }
+
+
 
 
 

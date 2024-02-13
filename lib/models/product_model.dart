@@ -52,7 +52,7 @@ class Product {
       imageUrls: List<String>.from(json['imageUrls'] as List<dynamic>? ?? []),
       category: json['category'] as String? ?? '',
       brand: json['brand'] as String?,
-      regularPrice: (json['regularPrice'] as num?)?.toInt() ?? 0,
+      regularPrice: (json['regularPrice'] as num?)?.toInt(),
       salesPrice: (json['salesPrice'] as num?)?.toInt(),
       taxStatus: json['taxStatus'] as String? ?? '',
       taxPercentage: (json['taxValue'] as num?)?.toDouble(),
@@ -94,6 +94,22 @@ class Product {
     };
   }
 }
+
+productQuerySub({String? subCategory}) {
+  Query query = FirebaseFirestore.instance.collection('products').where('approved', isEqualTo: true);
+
+  if (subCategory != null && subCategory.isNotEmpty) {
+    query = query.where('subCategory', isEqualTo: subCategory);
+  }
+
+  return query.withConverter<Product>(
+    fromFirestore: (snapshot, _) => Product.fromJson(snapshot.data()!),
+    toFirestore: (product, _) => product.toJson(),
+  );
+}
+
+
+
 
 productQuery({category}) {
   Query query = FirebaseFirestore.instance.collection('products').where('approved', isEqualTo: true);

@@ -102,8 +102,7 @@ class _CartScreenState extends State<CartScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Rs. ${_service.formatedNumber(product.salesPrice ?? product.regularPrice ?? 0)}'),
-                      //if (product.brand != null && product.brand!.isNotEmpty)
-                        Text('Brand: ${product.brand}'),
+                      Text('Brand: ${product.brand ?? ''}'),
                     ],
                   ),
                   trailing: Row(
@@ -116,6 +115,7 @@ class _CartScreenState extends State<CartScreen> {
                     ],
                   ),
                 );
+
               },
             ),
           ),
