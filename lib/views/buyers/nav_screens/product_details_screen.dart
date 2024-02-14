@@ -251,6 +251,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            id: widget.productId ?? '', // Assuming widget.productId is the ID
            productName: widget.product.productName,
            salesPrice: widget.product.salesPrice,
+           brand: widget.product.brand,
            // Copy other fields as needed
          );
 

@@ -10,6 +10,10 @@ class AuthController{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 
+
+
+
+
   Future<String>  signUpUsers(
       String email,
       String fullName,
@@ -76,23 +80,15 @@ class AuthController{
 
   Future<void> logOutAndDeleteData() async {
     try {
-      // Get the current user
-      User? user = _auth.currentUser;
-
-      // Sign out the user
       await _auth.signOut();
-
-      // Delete user data from Firestore
-      if (user != null) {
-        await _firestore.collection('users').doc(user.uid).delete();
-        print('User data deleted successfully');
-      }
-
       print('User logged out successfully');
     } catch (e) {
+
       print('Error logging out: $e');
     }
   }
+
+
 
 
 
@@ -123,7 +119,31 @@ class AuthController{
     }
     return null;
   }
+  Future<void> updateUserDetails({
+    required String fullName,
+    required String phoneNumber,
+    required String address,
+  }) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await _firestore.collection('buyers').doc(user.uid).update({
+          'fullName': fullName,
+          'phoneNumber': phoneNumber,
+          'address': address,
+        });
+      } else {
+        throw Exception('User not logged in');
+      }
+    } catch (e) {
+      throw Exception('Error updating user details: $e');
+    }
+  }
 }
+
+
+
+
 
 class UserDetails {
   final String email;
