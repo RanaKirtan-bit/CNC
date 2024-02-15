@@ -7,6 +7,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clickncart/models/product_model.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
+
+
 class ProductDetailsScreen extends StatefulWidget {
   final Product product;
   final String? productId;
@@ -291,12 +293,5 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
    }
 
 
+   }
 
-
-
-
-
-
-
-
-}

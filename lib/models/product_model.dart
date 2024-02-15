@@ -20,6 +20,7 @@ class Product {
   final int? reOrderLevel;
   final bool? chargeShipping;
   final double? shippingCharge;
+  int quantity;
   final List<String>? sizeList;
 
   Product({
@@ -43,6 +44,7 @@ class Product {
     this.chargeShipping,
     this.shippingCharge,
     this.sizeList,
+    this.quantity = 1,
   });
 
   factory Product.fromJson(Map<String, Object?> json) {
