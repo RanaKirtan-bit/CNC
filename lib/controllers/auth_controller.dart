@@ -139,6 +139,21 @@ class AuthController{
       throw Exception('Error updating user details: $e');
     }
   }
+
+  Future<String?> fetchUserName() async {
+    try {
+      // Assume you have a method to get the user details from Firebase
+      UserDetails? userDetails = await fetchUserDetails();
+      return userDetails?.fullName;
+    } catch (e) {
+      print('Error fetching user name: $e');
+      return null;
+    }
+  }
+
+
+
+
 }
 
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../models/product_model.dart';
 import '../views/seller/seller_controllers/seller_auth_controller.dart';
 
 class ProductProvider with ChangeNotifier{
@@ -17,6 +18,13 @@ class ProductProvider with ChangeNotifier{
   };
   final List<XFile>? imageFiles = [];
   List<Map<String, dynamic>> productDataList = [];
+  List<Product> _products = [];
+  List<Product> _searchResults = [];
+  bool _isLoading = false;
+
+  List<Product> get products => _products;
+  List<Product> get searchResults => _searchResults;
+  bool get isLoading => _isLoading;
 
 
   Future<void> saveProduct() async {
@@ -188,4 +196,53 @@ class ProductProvider with ChangeNotifier{
       // Handle error as needed
     }
   }
+
+  Future<void> searchProducts(String query) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('products')
+          .get();
+
+      _searchResults = snapshot.docs
+          .map((doc) => Product.fromJson(doc.data()))
+          .where((product) =>
+          product.productName!
+              .toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (error) {
+      print('Error searching products: $error');
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Method to fetch random products
+  Future<void> fetchRandomProducts() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('products')
+          .limit(10) // Fetch 10 random products
+          .get();
+
+      _products = snapshot.docs
+          .map((doc) => Product.fromJson(doc.data()))
+          .toList();
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (error) {
+      print('Error fetching random products: $error');
+      _isLoading = false;
+      notifyListeners();
+    }
+}
 }
