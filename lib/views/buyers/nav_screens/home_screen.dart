@@ -24,6 +24,7 @@ class HomeScreen extends StatelessWidget {
           SerachInputWidget(),
           BannerWidget(),
           CategoryWidget(),
+
         ],
       ),
     );
@@ -61,69 +62,37 @@ class SerachInputWidget extends StatelessWidget {
 }
 
 class WelcomeText extends StatelessWidget {
-  const WelcomeText({Key? key});
+  const WelcomeText({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFA6F1DF), Color(0xFFFFBBBB)],
-          begin: FractionalOffset(0.5, 0.7),
-        ),
+          gradient: LinearGradient(
+            colors: [Color(0xFFA6F1DF),Color(0xFFFFBBBB)],
+            begin: FractionalOffset(0.5, 0.7),
+          )
       ),
       child: Padding(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
-          left: 25,
-          right: 15,
-        ),
+        padding:  EdgeInsets.only(top: MediaQuery.of(context).padding.top,left: 25,right: 15),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            FutureBuilder<String?>(
-              future: AuthController().fetchUserName(), // Fetch user name
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                }
-                if (snapshot.hasData) {
-                  return Text(
-                    '${snapshot.data}, What Are You\n Looking For 👀 ',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'Semi-Bold',
-                    ),
-                  );
-                }
-                return Text(
-                  'Guest, What Are You\n Looking For 👀 ',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: 'Semi-Bold',
-                  ),
-                );
-              },
+
+          Text('Kirtan, What Are You\n Looking For 👀 ',
+            style: TextStyle(fontSize: 22,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Semi-Bold',
             ),
-            InkWell(
-              onTap: () {
-                // Navigate to cart screen
-              },
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: SvgPicture.asset(
-                  'assets/images/shopping_cart.svg',
-                  width: 20,
+          ),
+              Container(
+                child: SvgPicture.asset('assets/images/shopping_cart.svg',
+                    width: 20,
                 ),
               ),
-            ),
-          ],
+        ],
         ),
       ),
     );

@@ -55,7 +55,7 @@ class AuthController{
       if (email.isNotEmpty && password.isNotEmpty) {
         UserCredential credential =
         await _auth.signInWithEmailAndPassword(email: email, password: password);
-
+            
         // Check user role before allowing login
         DocumentSnapshot userDoc =
         await _firestore.collection('buyers').doc(credential.user!.uid).get();
@@ -81,9 +81,9 @@ class AuthController{
   Future<void> logOutAndDeleteData() async {
     try {
       await _auth.signOut();
+      // Additional steps to clear cached data if needed
       print('User logged out successfully');
     } catch (e) {
-
       print('Error logging out: $e');
     }
   }

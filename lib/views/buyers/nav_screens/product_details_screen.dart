@@ -1,5 +1,6 @@
 import 'package:clickncart/controllers/auth_controller.dart';
 import 'package:clickncart/firebase_service.dart';
+import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -303,6 +304,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            content: Text('Please log in to add products to the cart.'),
          ),
        );
+       Navigator.pushReplacement(context, MaterialPageRoute(
+           builder: (context) => LoginScreen(
+
+       ),
+       )
+     );
      }
    }
 
