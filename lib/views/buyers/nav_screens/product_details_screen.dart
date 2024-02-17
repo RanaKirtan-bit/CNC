@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clickncart/models/product_model.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 
 
@@ -25,6 +27,7 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
    final FirebaseService _service = FirebaseService();
   int? pageNumber = 0;
+   late Razorpay _razorpay;
 
 
 
@@ -35,7 +38,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
    void initState() {
      super.initState();
      _loadUserData();
+     _razorpay = Razorpay();
+     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
    }
+
+
+
+
+
 
    Future<void> _loadUserData() async {
      try {
@@ -232,7 +244,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             // Buy Now Button
             ElevatedButton(
               onPressed: () {
+                launchPayment();
                 //_buyNow();
+
               },
               child: Text('Buy Now'),
             ),
@@ -291,6 +305,60 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
        );
      }
    }
+
+   void launchPayment() async {
+     var options = {
+       'key': 'rzp_test_UgjuCBp0lFcBCP', //<-- your razorpay api key/test or live mode goes here.
+       'amount': widget.product.salesPrice! * 100,
+       'name': 'flutterdemorazorpay',
+       'description': 'Test payment from Flutter app',
+       'prefill': {'contact': '', 'email': ''},
+       'external': {'wallets': []}
+     };
+
+     try {
+       _razorpay.open(options);
+     } catch (e) {
+       debugPrint(e as String?);
+     }
+   }
+
+
+   void _handlePaymentError(PaymentFailureResponse response) {
+     Fluttertoast.showToast(
+         msg: 'Error ' + response.code.toString() + ' ' + response.message.toString(),
+         toastLength: Toast.LENGTH_SHORT,
+         gravity: ToastGravity.CENTER,
+         timeInSecForIosWeb: 1,
+         backgroundColor: Colors.red,
+         textColor: Colors.white,
+         fontSize: 16.0);
+   }
+
+   void _handlePaymentSuccess(PaymentSuccessResponse response) {
+     Fluttertoast.showToast(
+         msg: 'Payment Success ' + response.paymentId.toString(),
+         toastLength: Toast.LENGTH_SHORT,
+         gravity: ToastGravity.CENTER,
+         timeInSecForIosWeb: 1,
+         backgroundColor: Colors.green,
+         textColor: Colors.black,
+         fontSize: 16.0);
+   }
+
+   void _handleExternalWallet(ExternalWalletResponse response) {
+     Fluttertoast.showToast(
+         msg: 'Wallet Name ' + response.walletName.toString(),
+         toastLength: Toast.LENGTH_SHORT,
+         gravity: ToastGravity.CENTER,
+         timeInSecForIosWeb: 1,
+         backgroundColor: Colors.green,
+         textColor: Colors.black,
+         fontSize: 16.0);
+   }
+
+
+
 
 
    }
