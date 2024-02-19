@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'models/order_model.dart';
 import 'models/product_model.dart';
 
 
@@ -211,6 +212,28 @@ class FirebaseService {
       throw e;
     }
   }
+
+  Future<List<LocalOrder>> getUserOrders(String userId) async {
+    try {
+      // Implement logic to fetch user orders from Firebase using the provided userId
+      // Example: Query the 'orders' collection where 'buyerId' matches
+      // Return a List<Order>
+
+      // For example:
+      QuerySnapshot orderSnapshot =
+      await _firestore.collection('orders').where('buyerId', isEqualTo: userId).get();
+      List<LocalOrder> userOrders =
+      orderSnapshot.docs.map((doc) => LocalOrder.fromFirestore(doc)).toList();
+      return userOrders;
+
+      // Replace the above logic with your actual implementation
+      // throw UnimplementedError('getUserOrders method not implemented');
+    } catch (e) {
+      print('Error fetching user orders: $e');
+      throw e;
+    }
+  }
+
 
 
 

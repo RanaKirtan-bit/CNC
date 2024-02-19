@@ -55,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
                 'assets/images/shop.svg',
                 width: 20,
               ),
-              label: 'SHOP',
+              label: 'ORDERS',
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
@@ -92,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
       case 1:
         return CategoryScreen();
       case 2:
-        return StoreScreen();
+        return OrderScreen();
       case 3:
         return FutureBuilder<UserDetails?>(
           // Assuming you have a method to fetch user details, modify it accordingly
