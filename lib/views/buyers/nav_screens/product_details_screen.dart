@@ -342,16 +342,58 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
          fontSize: 16.0);
    }
 
-   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-     Fluttertoast.showToast(
-         msg: 'Payment Success ' + response.paymentId.toString(),
-         toastLength: Toast.LENGTH_SHORT,
-         gravity: ToastGravity.CENTER,
-         timeInSecForIosWeb: 1,
-         backgroundColor: Colors.green,
-         textColor: Colors.black,
-         fontSize: 16.0);
+   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+     try {
+       // Check if the user is logged in
+       if (_userDetails != null) {
+         // Prepare order details
+         List<Product> products = [widget.product]; // You can extend this list if needed
+         String paymentId = response.paymentId.toString();
+         String totalAmount = widget.product.salesPrice != null
+             ? widget.product.salesPrice.toString()
+             : widget.product.regularPrice.toString();
+
+         // Create the order
+         await _service.createOrder(
+           buyerId: _userDetails!.buyerId,
+           products: products,
+           paymentId: paymentId,
+           totalAmount: totalAmount,
+         );
+
+         // Show a success message
+         Fluttertoast.showToast(
+           msg: 'Payment Success $paymentId',
+           toastLength: Toast.LENGTH_SHORT,
+           gravity: ToastGravity.CENTER,
+           timeInSecForIosWeb: 1,
+           backgroundColor: Colors.green,
+           textColor: Colors.black,
+           fontSize: 16.0,
+         );
+
+         // Optional: Navigate to the order confirmation screen or any other screen
+         // Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
+       } else {
+         // User is not logged in, prompt them to log in
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(
+             content: Text('Please log in to complete the order.'),
+           ),
+         );
+         Navigator.pushReplacement(
+           context,
+           MaterialPageRoute(
+             builder: (context) => LoginScreen(),
+           ),
+         );
+       }
+     } catch (e) {
+       // Handle errors
+       print('Error handling payment success: $e');
+     }
    }
+
 
    void _handleExternalWallet(ExternalWalletResponse response) {
      Fluttertoast.showToast(

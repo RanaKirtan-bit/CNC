@@ -220,16 +220,44 @@ class _CartScreenState extends State<CartScreen> {
         fontSize: 16.0);
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    Fluttertoast.showToast(
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    try {
+      // Create a list containing the product details
+      List<Product> orderedProducts = List.from(cartItems);
+
+      // Create the order in Firebase
+      await _service.createOrder(
+        buyerId: widget.userDetails.buyerId,
+        products: orderedProducts,
+        paymentId: response.paymentId.toString(),
+        totalAmount: _calculateTotalPrice(),
+      );
+
+      Fluttertoast.showToast(
         msg: 'Payment Success ' + response.paymentId.toString(),
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.green,
         textColor: Colors.black,
-        fontSize: 16.0);
+        fontSize: 16.0,
+      );
+
+      // Additional logic you may want to perform after creating the order
+      // For example, navigate to a success screen or perform other actions.
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: 'Error creating order: $e',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
+
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     Fluttertoast.showToast(

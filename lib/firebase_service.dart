@@ -2,8 +2,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'models/product_model.dart';
+
+
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference categories = FirebaseFirestore.instance.collection(
@@ -25,23 +26,6 @@ class FirebaseService {
 
 
 
-  /*
-       Future<List<String>> getMainCategories() async {
-                QuerySnapshot querySnapshot = await mainCart.get();
-                List<String> categories = querySnapshot.docs.map((
-                    doc) => doc['mainCategory'] as String).toList();
-                return categories;
-        }
-
-        Future<List<String>> getSubCategories(String mainCategory) async {
-                QuerySnapshot querySnapshot = await subCart
-                    .where('mainCategory', isEqualTo: mainCategory)
-                    .get();
-                List<String> subCategories =
-                querySnapshot.docs.map((doc) => doc['subCartName'] as String).toList();
-                return subCategories;
-        }
-*/
   Future<DocumentSnapshot> getSellerById(String sellerId) async {
     try {
       return await _firestore.collection('sellers').doc(sellerId).get();
@@ -198,11 +182,44 @@ class FirebaseService {
   }
 
 
+  Future<void> createOrder({
+    required String buyerId,
+    required List<Product> products,
+    required String paymentId,
+    required String totalAmount,
+  }) async {
+    try {
+      // Assuming 'orders' is the name of the collection storing orders
+      CollectionReference ordersCollection = _firestore.collection('orders');
+
+      // Convert products to a list of maps
+      List<Map<String, dynamic>> productsData =
+      products.map((product) => product.toJson()).toList();
+
+      // Create an order document
+      await ordersCollection.add({
+        'buyerId': buyerId,
+        'products': productsData,
+        'paymentId': paymentId,
+        'totalAmount': totalAmount,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      print('Order created successfully');
+    } catch (e) {
+      print('Error creating order: $e');
+      throw e;
+    }
+  }
+
+
+
 
 
 
 
 }
+
 
 
 
