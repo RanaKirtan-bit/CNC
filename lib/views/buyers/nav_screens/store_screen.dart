@@ -113,11 +113,10 @@ class _OrderScreenState extends State<OrderScreen> {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: order.products.length,
                       itemBuilder: (context, productIndex) {
-                        return _buildProductCard(
-                          order.products[productIndex],
-                        );
+                        return _buildProductCard(order, order.products[productIndex]);
                       },
                     ),
+
                   ],
                 ),
               ),
@@ -128,8 +127,18 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 
+  void _deleteOrder(LocalOrder.LocalOrder order) async {
+    try {
+      // Implement the logic to delete the order from Firebase
+      await _service.deleteOrder(order.orderId);
+      // Reload the orders after deletion
+      await _loadOrders();
+    } catch (e) {
+      print('Error deleting order: $e');
+    }
+  }
 
-  Widget _buildProductCard(Product product) {
+  Widget _buildProductCard(LocalOrder.LocalOrder order, Product product) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       elevation: 4,
@@ -143,7 +152,11 @@ class _OrderScreenState extends State<OrderScreen> {
             ),
             IconButton(
               icon: Icon(Icons.remove_red_eye),
-              onPressed: () => _showProductDetailsDialog(product),
+              onPressed: () => _showProductDetailsDialog(order,product),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _deleteOrder(order),
             ),
           ],
         ),
@@ -158,7 +171,10 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 
-  void _showProductDetailsDialog(Product product) {
+
+
+
+  void _showProductDetailsDialog(LocalOrder.LocalOrder order, Product  product) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -182,6 +198,14 @@ class _OrderScreenState extends State<OrderScreen> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text('Close'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Handle delete action
+                _deleteOrder(order);
+                Navigator.pop(context);
+              },
+              child: Text('Delete Order'),
             ),
           ],
         );

@@ -235,8 +235,15 @@ class FirebaseService {
   }
 
 
-
-
+  Future<void> deleteOrder(String orderId) async {
+    try {
+      // Implement the logic to delete the order from Firebase
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).delete();
+    } catch (e) {
+      print('Error deleting order: $e');
+      throw Exception('Failed to delete order: $e');
+    }
+  }
 
 
 
