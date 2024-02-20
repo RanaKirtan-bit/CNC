@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:clickncart/models/product_model.dart';
 import 'package:clickncart/firebase_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../controllers/auth_controller.dart';
@@ -225,12 +228,21 @@ class _CartScreenState extends State<CartScreen> {
       // Create a list containing the product details
       List<Product> orderedProducts = List.from(cartItems);
 
+
       // Create the order in Firebase
       await _service.createOrder(
         buyerId: widget.userDetails.buyerId,
         products: orderedProducts,
         paymentId: response.paymentId.toString(),
         totalAmount: _calculateTotalPrice(),
+      );
+
+      await sendMail(
+        recipientEmail: widget.userDetails.email,
+        mailMessage: 'Thank you for your purchase!',
+        products: cartItems,
+        appName: 'ClickNCart',
+        name: widget.userDetails.fullName,
       );
 
       Fluttertoast.showToast(
@@ -282,4 +294,68 @@ class _CartScreenState extends State<CartScreen> {
     }
     return total.toStringAsFixed(2);
   }
+
+  Future<void> sendMail({
+    required String recipientEmail,
+    required String mailMessage,
+    required List<Product> products,
+    required String appName,
+    required String name,
+  }) async {
+    // change your email here
+    String username = 'ranakirtan9@gmail.com';
+    // change your password here
+    String password = 'kmujitoekdzkgyut';
+    final smtpServer = gmail(username, password);
+    final message = Message()
+      ..from = Address(username, 'Mail Service')
+      ..recipients.add(recipientEmail)
+      ..subject = 'Order Confirmation';
+
+    // Add the product names to the email body
+    String productTable = '''
+    <table border="1">
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+      </tr>
+  ''';
+
+    // Add rows for each product in the table
+    for (Product product in products) {
+      String productName = product.productName ?? 'N/A';
+      String qty = product.quantity?.toString() ?? '1'; // Replace with your actual field name for the image URL
+      productTable += '''
+      <tr>
+        <td>$productName</td>
+        <td>$qty</td>
+      </tr>
+    ''';
+    }
+
+    productTable += '</table>'; // Close the table tag
+
+    // Add product names and images to the HTML body
+    message.html = '''
+    <h3>Order Details</h3>
+    <p><strong>Product Details:</strong></p>
+    $productTable
+    <p><strong>App Name:</strong> $appName</p>
+    <p><strong>Name:</strong> $name</p>
+    <p>$mailMessage</p>
+    <h6 style="text-align: center;">If you cancel Your Order call this Customer service Number +91 9978427943 or +91 9313226480</h6>
+    <h6 style="text-align: center;">Copyright © 2024 ClickNCart Private Limited (formerly known as ClickNCart Shopping Private Limited), India. All rights reserved.</h6>
+  ''';
+
+
+    try {
+      await send(message, smtpServer);
+      print('Email sent successfully');
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+  }
+
 }

@@ -1,3 +1,4 @@
+import 'package:clickncart/views/seller/seller_auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../controllers/auth_controller.dart';
 import '../auth/login_screen.dart';
@@ -185,6 +186,24 @@ class _AccountScreenState extends State<AccountScreen> {
             icon: Icon(Icons.logout, color: Colors.redAccent),
             onPressed: _logout,
           ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return LoginSellerScreen();
+                }),
+              );
+            },
+            child: Text(
+              'Seller',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+          ),
         ],
       ),
       body: Padding(
@@ -279,6 +298,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ),
     );
+
   }
 
   Widget _buildEditableField({
