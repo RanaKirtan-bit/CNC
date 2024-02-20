@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:clickncart/models/product_model.dart';
@@ -8,9 +9,11 @@ import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../controllers/auth_controller.dart';
+import '../../../controllers/user_controller.dart';
 
 class CartScreen extends StatefulWidget {
   final UserDetails userDetails;
+
 
   const CartScreen({required this.userDetails});
 
@@ -20,9 +23,9 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final FirebaseService _service = FirebaseService();
+  final UserController _userController = UserController();
   List<Product> cartItems = [];
    late Razorpay _razorpay;
-
 
   @override
   void initState() {
@@ -97,6 +100,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("address:${widget.userDetails.address}");
     return Scaffold(
       appBar: AppBar(
         title: Text('Cart'),
@@ -164,6 +168,18 @@ class _CartScreenState extends State<CartScreen> {
               },
             ),
           ),
+          ElevatedButton(
+            onPressed: () {
+              _showDeliveryAddressDialog();
+              _showAddressEditDialog();
+            },
+            child: Text('Add/Update Delivery Address'),
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              primary: Colors.blue,
+              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -175,7 +191,11 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 ElevatedButton(
                   onPressed: (){
-                    launchPayment();
+                    if (widget.userDetails.address != null && widget.userDetails.address!="") {
+                      launchPayment();
+                    } else {
+                      _showAddressNotSetDialog();
+                    }
                   },
                   child: Text('Place Order'),
                   style: ElevatedButton.styleFrom(
@@ -186,6 +206,77 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ],
             ),
+          ),
+              ],
+            ),
+          );
+  }
+
+
+  void _showDeliveryAddressDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delivery Address'),
+        content: Text(widget.userDetails.address),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddressNotSetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delivery Address not set'),
+        content: Text('Please add/update your delivery address before placing an order.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAddressEditDialog();
+            },
+            child: Text('Add/Update Address'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddressEditDialog() {
+    _userController.addressController.text = widget.userDetails.address;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit Address'),
+        content: TextFormField(
+          controller: _userController.addressController,
+          decoration: InputDecoration(labelText: 'Enter your address'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await _userController.updateUserDetails(
+                fullName: widget.userDetails.fullName,
+                phoneNumber: widget.userDetails.phoneNumber,
+                address: _userController.addressController.text,
+              );
+              Navigator.pop(context);
+            },
+            child: Text('Save Address'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
           ),
         ],
       ),
