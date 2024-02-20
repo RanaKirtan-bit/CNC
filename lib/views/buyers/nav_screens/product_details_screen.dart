@@ -3,11 +3,14 @@ import 'package:clickncart/firebase_service.dart';
 import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clickncart/models/product_model.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 
@@ -360,7 +363,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            paymentId: paymentId,
            totalAmount: totalAmount,
          );
-
+         sendMail(
+           recipientEmail: _userDetails!.email,
+           mailMessage: 'Thank you for your purchase!',
+           productName: widget.product.productName!,
+           productImage: widget.product.imageUrls!.first, // Assuming the product has at least one image
+           totalPaidAmount: widget.product.salesPrice != null
+               ? widget.product.salesPrice.toString()
+               : widget.product.regularPrice.toString(),
+           appName: 'ClickNCart',
+           Name: _userDetails!.fullName,
+         );
          // Show a success message
          Fluttertoast.showToast(
            msg: 'Payment Success $paymentId',
@@ -407,10 +420,51 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
    }
 
 
+   void sendMail({
+     required String recipientEmail,
+     required String mailMessage,
+     required String productName,
+     required String productImage,
+     required String totalPaidAmount,
+     required String appName,
+     required String Name,
+   }) async {
+     // change your email here
+     String username = 'ranakirtan9@gmail.com';
+     // change your password here
+     String password = 'kmujitoekdzkgyut';
+     final smtpServer = gmail(username, password);
+     final message = Message()
+       ..from = Address(username, 'Mail Service')
+       ..recipients.add(recipientEmail)
+       ..subject = 'Order Confirmation'
+       ..html = '''
+      <h3>Order Details</h3>
+      <p><strong>Product Name:</strong> $productName</p>
+      <p><strong>Product Image:</strong> <br> <img src="$productImage" align="left" alt="Product Image" style="max-width: 100px;"></p>
+      <p><strong>Total Paid Amount:</strong> Rs. $totalPaidAmount /- </p>
+      <p><strong>App Name:</strong> $appName</p>
+      <p><strong>Name:</strong> $Name</p>
+      <p>$mailMessage</p>
+      <h5 style="text-align: center;">Thank you for Purchase $productName  with ClickNCart. Enjoy your day!</h5>
+        <h6 style="text-align: center;">If you cancel  Your Order call this Custome service Number +91 9978427943 or +91 9313226480</h6>
+        <h6 style="text-align: center;">Copyright © 2024 ClickNCart Private Limited (formerly known as ClickNCart Shopping Private Limited), India. All rights reserved.</h6>
+    ''';
 
-
-
+     try {
+       await send(message, smtpServer);
+       print('Email sent successfully');
+     } catch (e) {
+       if (kDebugMode) {
+         print(e.toString());
+       }
+     }
    }
+
+
+
+
+}
 
 
 
