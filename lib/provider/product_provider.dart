@@ -81,86 +81,86 @@ class ProductProvider with ChangeNotifier{
   }
   gerFormData(
       {
-                  String? productName,
-                  int? regularPrice,
-                  int? salesPrice,
-                  String? taxStatus,
-                  double? taxPercentage,
-                  String? category,
-                  String? mainCategory,
-                  String? subCategory,
-                  String? description,
-                  DateTime? scheduleDate,
-                  String? sku,
-                  bool? manageInventory,
-                  int? soh,
-                  int? reOrderLevel,
-                  bool? chargeShipping,
-                  int? shippingCharge,
-                  String? brand,
-                  List? sizeList,
+        String? productName,
+        int? regularPrice,
+        int? salesPrice,
+        String? taxStatus,
+        double? taxPercentage,
+        String? category,
+        String? mainCategory,
+        String? subCategory,
+        String? description,
+        DateTime? scheduleDate,
+        String? sku,
+        bool? manageInventory,
+        int? soh,
+        int? reOrderLevel,
+        bool? chargeShipping,
+        int? shippingCharge,
+        String? brand,
+        List? sizeList,
 
       }){
 
-        if(productName!=null) {
-          productData! ['productName'] = productName;
-        }
-        if(regularPrice!=null){
-          productData! ['regularPrice'] = regularPrice;
-        }
-        if(salesPrice!=null){
-          productData! ['salesPrice'] = salesPrice;
-        }
-        if(taxStatus!=null){
-          productData! ['taxStatus'] = taxStatus;
-        }
-        if(taxPercentage!=null){
-          productData! ['taxValue'] = taxPercentage;
-        }
-        if(category!=null){
-          productData! ['category'] = category;
-        }
-        if(mainCategory!=null){
-          productData! ['mainCategory'] = mainCategory;
-        }
-        if(subCategory!=null){
-          productData! ['subCategory'] = subCategory;
-        }
-        if(description!=null){
-          productData! ['description'] = description;
-        }
-        if(scheduleDate!=null){
-          productData! ['scheduleDate'] = scheduleDate;
-        }
-        if(sku!=null){
-          productData! ['sku'] = sku;
-        }
-        if(manageInventory!=null){
-          productData! ['manageInventory'] = manageInventory;
-        }
-        if(soh!=null){
-          productData! ['soh'] = soh;
-        }
-        if(reOrderLevel!=null){
-          productData! ['reOrderLevel'] = reOrderLevel;
-        }
-        if(chargeShipping!=null){
-          productData! ['chargeShipping'] = chargeShipping;
-        }
-        if(shippingCharge!=null){
-          productData! ['shippingCharge'] = shippingCharge;
-        }
-        if(brand!=null){
-          productData! ['brand'] = brand;
-        }
-        if(sizeList!=null){
-          productData! ['sizeList'] = sizeList;
-        }
-        notifyListeners();
+    if(productName!=null) {
+      productData! ['productName'] = productName;
+    }
+    if(regularPrice!=null){
+      productData! ['regularPrice'] = regularPrice;
+    }
+    if(salesPrice!=null){
+      productData! ['salesPrice'] = salesPrice;
+    }
+    if(taxStatus!=null){
+      productData! ['taxStatus'] = taxStatus;
+    }
+    if(taxPercentage!=null){
+      productData! ['taxValue'] = taxPercentage;
+    }
+    if(category!=null){
+      productData! ['category'] = category;
+    }
+    if(mainCategory!=null){
+      productData! ['mainCategory'] = mainCategory;
+    }
+    if(subCategory!=null){
+      productData! ['subCategory'] = subCategory;
+    }
+    if(description!=null){
+      productData! ['description'] = description;
+    }
+    if(scheduleDate!=null){
+      productData! ['scheduleDate'] = scheduleDate;
+    }
+    if(sku!=null){
+      productData! ['sku'] = sku;
+    }
+    if(manageInventory!=null){
+      productData! ['manageInventory'] = manageInventory;
+    }
+    if(soh!=null){
+      productData! ['soh'] = soh;
+    }
+    if(reOrderLevel!=null){
+      productData! ['reOrderLevel'] = reOrderLevel;
+    }
+    if(chargeShipping!=null){
+      productData! ['chargeShipping'] = chargeShipping;
+    }
+    if(shippingCharge!=null){
+      productData! ['shippingCharge'] = shippingCharge;
+    }
+    if(brand!=null){
+      productData! ['brand'] = brand;
+    }
+    if(sizeList!=null){
+      productData! ['sizeList'] = sizeList;
+    }
+    notifyListeners();
   }
   getImageFile(image){
-        imageFiles!.add(image);
-        notifyListeners();
+    imageFiles!.add(image);
+    notifyListeners();
   }
 
   Future<void> fetchProducts() async {
@@ -232,10 +232,14 @@ class ProductProvider with ChangeNotifier{
       QuerySnapshot<Map<String, dynamic>> snapshot =
       await _firestore.collection('products').where('sellerId', isEqualTo: sellerId).get();
 
-      productDataList = snapshot.docs.map((doc) async {
+      productDataList = snapshot.docs
+          .map((doc) {
         Map<String, dynamic> data = doc.data()!;
         data['documentId'] = doc.id;
-      }).cast<Map<String, dynamic>>().toList();
+        return data;
+      })
+          .cast<Map<String, dynamic>>() // Cast the List<dynamic> to List<Map<String, dynamic>>
+          .toList();
 
       notifyListeners();
     } catch (error) {
@@ -267,5 +271,5 @@ class ProductProvider with ChangeNotifier{
       _isLoading = false;
       notifyListeners();
     }
-}
+  }
 }

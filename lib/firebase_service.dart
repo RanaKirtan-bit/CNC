@@ -11,9 +11,9 @@ class FirebaseService {
   CollectionReference categories = FirebaseFirestore.instance.collection(
       'categorise');
   CollectionReference mainCategorise = FirebaseFirestore.instance.collection(
-            'mainCategorise');
-        CollectionReference subCategories = FirebaseFirestore.instance.collection('subCategorise');
-        CollectionReference sellers = FirebaseFirestore.instance.collection('sellers');
+      'mainCategorise');
+  CollectionReference subCategories = FirebaseFirestore.instance.collection('subCategorise');
+  CollectionReference sellers = FirebaseFirestore.instance.collection('sellers');
   CollectionReference products = FirebaseFirestore.instance.collection('products');
 
 
@@ -50,9 +50,9 @@ class FirebaseService {
 
 
   String formatedDate(DateTime date){
-        var outputFormat = DateFormat('dd/MM/yyyy hh:mm aa');
-        var outputDate = outputFormat.format(date);
-        return outputDate;
+    var outputFormat = DateFormat('dd/MM/yyyy hh:mm aa');
+    var outputDate = outputFormat.format(date);
+    return outputDate;
   }
 
 
@@ -273,8 +273,3 @@ class FirebaseService {
 
 
 }
-
-
-
-
-
