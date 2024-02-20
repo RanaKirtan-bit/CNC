@@ -223,6 +223,29 @@ class ProductProvider with ChangeNotifier{
     }
   }
 
+  // Inside ProductProvider
+  Future<void> fetchSoldProducts() async {
+    try {
+      // Get the seller ID of the logged-in user
+      String sellerId = SellerAuthController().getSellerId()!;
+
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+      await _firestore.collection('products').where('sellerId', isEqualTo: sellerId).get();
+
+      productDataList = snapshot.docs.map((doc) async {
+        Map<String, dynamic> data = doc.data()!;
+        data['documentId'] = doc.id;
+      }).cast<Map<String, dynamic>>().toList();
+
+      notifyListeners();
+    } catch (error) {
+      print('Error fetching products and buyers: $error');
+      // Handle error as needed
+    }
+  }
+
+
+
   // Method to fetch random products
   Future<void> fetchRandomProducts() async {
     try {

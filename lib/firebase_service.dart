@@ -245,7 +245,31 @@ class FirebaseService {
     }
   }
 
+  Future<DocumentSnapshot> getBuyerById(String buyerId) async {
+    try {
+      return await _firestore.collection('buyers').doc(buyerId).get();
+    } catch (error) {
+      // Handle errors
+      print("Error fetching buyer data by ID: $error");
+      throw error;
+    }
+  }
 
+  Future<Map<String, dynamic>?> getBuyerDetailsById(String buyerId) async {
+    try {
+      DocumentSnapshot buyerSnapshot =
+      await _firestore.collection('buyers').doc(buyerId).get();
+
+      if (buyerSnapshot.exists) {
+        return buyerSnapshot.data() as Map<String, dynamic>?;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print("Error fetching buyer details by ID: $error");
+      throw error;
+    }
+  }
 
 
 }
