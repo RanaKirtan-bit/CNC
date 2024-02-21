@@ -272,6 +272,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            productName: widget.product.productName,
            salesPrice: widget.product.salesPrice,
            brand: widget.product.brand,
+           sellerId: widget.product.sellerId,
            // Copy other fields as needed
          );
 

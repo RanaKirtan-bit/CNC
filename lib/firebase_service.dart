@@ -271,5 +271,33 @@ class FirebaseService {
     }
   }
 
+// Inside the FirebaseService class
+  Future<List<Map<String, dynamic>>> getSellerSoldProducts(String sellerId) async {
+    try {
+      // Query the orders collection to get sold products where the sellerId matches
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('orders')
+          .where('sellerId', isEqualTo: sellerId) // Assuming there's a 'status' field indicating sold products
+          .get();
+
+      // Print the number of documents found (for debugging)
+      print('Number of sold products found: ${querySnapshot.docs.length}');
+
+      // Extract product details from the documents
+      List<Map<String, dynamic>> soldProducts = querySnapshot.docs
+          .map((doc) => {
+        'productName': doc['productName'],
+        'salesPrice': doc['salesPrice'],
+        // Add more fields as needed
+      })
+          .toList();
+
+      return soldProducts;
+    } catch (e) {
+      // Handle errors
+      print('Error getting seller sold products: $e');
+      return [];
+    }
+  }
 
 }
