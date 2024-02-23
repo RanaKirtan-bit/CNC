@@ -1,5 +1,6 @@
 import 'package:clickncart/controllers/auth_controller.dart';
 import 'package:clickncart/firebase_service.dart';
+import 'package:clickncart/utils/show_snackBar.dart';
 import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -214,6 +215,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              SizedBox(height: 10,),
                             ],
                           ),
 
@@ -248,8 +250,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             // Buy Now Button
             ElevatedButton(
               onPressed: () {
-                launchPayment();
-                //_buyNow();
+                if(_userDetails!=null){
+                  launchPayment();
+                }
+                else{
+                  showSnack(context, 'Please Make Login');
+                }
 
               },
               child: Text('Buy Now'),
@@ -362,7 +368,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            buyerId: _userDetails!.buyerId,
            products: products,
            paymentId: paymentId,
-           totalAmount: totalAmount,
+           totalAmount: totalAmount, sellerId: widget.product.sellerId,
          );
          sendMail(
            recipientEmail: _userDetails!.email,
@@ -461,10 +467,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
        }
      }
    }
-
-
-
-
 }
 
 

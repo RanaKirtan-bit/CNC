@@ -7,11 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../models/order_model.dart';
 import '../models/product_model.dart';
 import '../views/seller/seller_controllers/seller_auth_controller.dart';
 
 class ProductProvider with ChangeNotifier{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<LocalOrder> _userOrders = [];
+
+  List<LocalOrder> get userOrders => _userOrders;
 
   Map<String, dynamic>? productData = {
     'approved' :false

@@ -1,6 +1,7 @@
 import 'package:clickncart/controllers/auth_controller.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/banner_widget.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
+import 'package:clickncart/views/seller/seller_auth/login_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -62,40 +63,57 @@ class SerachInputWidget extends StatelessWidget {
 }
 
 class WelcomeText extends StatelessWidget {
-  const WelcomeText({
-    super.key,
-  });
+  const WelcomeText({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFA6F1DF),Color(0xFFFFBBBB)],
-            begin: FractionalOffset(0.5, 0.7),
-          )
+        gradient: LinearGradient(
+          colors: [Color(0xFFA6F1DF), Color(0xFFFFBBBB)],
+          begin: FractionalOffset(0.5, 0.7),
+        ),
       ),
       child: Padding(
-        padding:  EdgeInsets.only(top: MediaQuery.of(context).padding.top,left: 25,right: 15),
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          left: 25,
+          right: 15,
+        ),
         child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
-          Text('Kirtan, What Are You\n Looking For 👀 ',
-            style: TextStyle(fontSize: 22,
-                fontWeight: FontWeight.w900,
-                fontFamily: 'Semi-Bold',
+            FutureBuilder<String?>(
+              future: AuthController().fetchUserName(), // Fetch user name
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                if (snapshot.hasData) {
+                  return Text(
+                    '${snapshot.data}, What Are You\n Looking For 👀 ',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'Semi-Bold',
+                    ),
+                  );
+                }
+                return Text(
+                  'Guest, What Are You\n Looking For 👀 ',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Semi-Bold',
+                  ),
+                );
+              },
             ),
-          ),
-              Container(
-                child: SvgPicture.asset('assets/images/shopping_cart.svg',
-                    width: 20,
-                ),
-              ),
-        ],
+          ],
         ),
       ),
     );
   }
 }
+
 

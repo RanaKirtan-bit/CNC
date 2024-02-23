@@ -39,11 +39,14 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<void> _loadCartItems() async {
     try {
-      List<Product> items = await _service.getCartItems(widget.userDetails.buyerId);
+      // Add a null check before calling getCartItems
+      if (widget.userDetails != null) {
+        List<Product> items = await _service.getCartItems(widget.userDetails.buyerId);
 
-      setState(() {
-        cartItems = items;
-      });
+        setState(() {
+          cartItems = items;
+        });
+      }
     } catch (e) {
       print('Error loading cart items: $e');
     }
@@ -100,6 +103,34 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.userDetails == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Cart'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Please log in to view your cart.',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the login screen
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
+                child: Text('Log In'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+
     print("address:${widget.userDetails.address}");
     return Scaffold(
       appBar: AppBar(
@@ -191,7 +222,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 ElevatedButton(
                   onPressed: (){
-                    if (widget.userDetails.address != null && widget.userDetails.address!="") {
+                    if (widget.userDetails.address != null && widget.userDetails.address!="" && widget.userDetails.address!=" ") {
                       launchPayment();
                     } else {
                       _showAddressNotSetDialog();
@@ -325,7 +356,7 @@ class _CartScreenState extends State<CartScreen> {
         buyerId: widget.userDetails.buyerId,
         products: orderedProducts,
         paymentId: response.paymentId.toString(),
-        totalAmount: _calculateTotalPrice(),
+        totalAmount: _calculateTotalPrice(), sellerId: '',
       );
 
       await sendMail(

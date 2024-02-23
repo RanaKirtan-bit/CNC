@@ -1,20 +1,45 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:clickncart/provider/product_provider.dart';
 import 'package:clickncart/firebase_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../seller_widget/custom_drawer.dart';
 
-class SellerHome extends StatelessWidget {
+class SellerHome extends StatefulWidget {
   static const String id = 'seller_Home';
 
-  const SellerHome({Key? key});
+  @override
+  _SellerHomeState createState() => _SellerHomeState();
+}
+
+class _SellerHomeState extends State<SellerHome> {
+  late FirebaseMessaging _firebaseMessaging;
+  String selerId = FirebaseAuth.instance.currentUser!.uid;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseMessaging = FirebaseMessaging.instance;
+    _configureFirebaseMessaging();
+  }
+
+  void _configureFirebaseMessaging() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // Handle incoming messages when the app is in the foreground
+      print('Received FCM message: ${message.notification?.title}');
+      // Update your UI or show a notification on SellerHome screen
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
-        String sellerId = ''; // Set the actual sellerId here
+        String sellerId = selerId ; // Set the actual sellerId here
+
 
         return Scaffold(
           appBar: AppBar(
@@ -23,51 +48,59 @@ class SellerHome extends StatelessWidget {
           ),
           drawer: CustomDrawer(),
           body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "Seller's Sold Products",
+                "Seller's Statistics",
                 style: TextStyle(fontSize: 22),
               ),
-              // Display the fetched sold products here
-              Expanded(
-                child: FutureBuilder(
-                  // Fetch sold products using FirebaseService with the sellerId
-                  future: FirebaseService().getSellerSoldProducts(sellerId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else {
-                      List<Map<String, dynamic>> soldProducts = snapshot.data as List<Map<String, dynamic>>;
-
-                      return ListView.builder(
-                        itemCount: soldProducts.length,
-                        itemBuilder: (context, index) {
-                          Map<String, dynamic> productData = soldProducts[index];
-
-                          return ListTile(
-                            title: Text(productData['productName']),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Price: ${productData['salesPrice']}'),
-                                // Display buyer information
-                                // Add more details as needed
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  },
-                ),
+              _buildStatCard(
+                title: 'Total Orders',
+                future: FirebaseService().getTotalOrders(sellerId),
+              ),
+              _buildStatCard(
+                title: 'Total Sales',
+                future: FirebaseService().getTotalSalesAmount(sellerId),
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStatCard({required String title, required Future<dynamic> future}) {
+    return Card(
+      elevation: 4,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            FutureBuilder(
+              future: future,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  String statValue = snapshot.data.toString();
+                  return Text(
+                    statValue,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

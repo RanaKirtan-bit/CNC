@@ -188,6 +188,7 @@ class FirebaseService {
     required List<Product> products,
     required String paymentId,
     required String totalAmount,
+    required String sellerId,
   }) async {
     try {
       // Assuming 'orders' is the name of the collection storing orders
@@ -204,6 +205,7 @@ class FirebaseService {
         'paymentId': paymentId,
         'totalAmount': totalAmount,
         'timestamp': FieldValue.serverTimestamp(),
+        'sellerId': sellerId,
       });
 
       print('Order created successfully');
@@ -274,23 +276,37 @@ class FirebaseService {
 // Inside the FirebaseService class
   Future<List<Map<String, dynamic>>> getSellerSoldProducts(String sellerId) async {
     try {
-      // Query the orders collection to get sold products where the sellerId matches
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
           .collection('orders')
-          .where('sellerId', isEqualTo: sellerId) // Assuming there's a 'status' field indicating sold products
+          .where('sellerId', isEqualTo: sellerId)
           .get();
 
-      // Print the number of documents found (for debugging)
-      print('Number of sold products found: ${querySnapshot.docs.length}');
+      List<Map<String, dynamic>> soldProducts = [];
 
-      // Extract product details from the documents
-      List<Map<String, dynamic>> soldProducts = querySnapshot.docs
-          .map((doc) => {
-        'productName': doc['productName'],
-        'salesPrice': doc['salesPrice'],
+      for (var doc in querySnapshot.docs) {
+        List<Map<String, dynamic>> products =
+        List<Map<String, dynamic>>.from(doc['products']);
+
+        for (var productData in products) {
+          if (productData.containsKey('productName')) {
+            soldProducts.add({
+              'productName': productData['productName'],
+              'sellerId': productData['sellerId'],
+              'buyerId': productData['buyerId'],
+              'salesPrice': productData['salesPrice'],
+              // Add more fields as needed
+            });
+          }
+        }
+      }
+
+      print('Number of sold products found: ${soldProducts.length}');
+      for (var product in soldProducts) {
+        print('Product Name: ${product['productName']}');
+        print('Sales Price: ${product['salesPrice']}');
+        print('Buyer: ${product['buyerId']}');
         // Add more fields as needed
-      })
-          .toList();
+      }
 
       return soldProducts;
     } catch (e) {
@@ -300,4 +316,78 @@ class FirebaseService {
     }
   }
 
-}
+
+  Future<int> getTotalOrders(String sellerId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('orders')
+          .where('sellerId', isEqualTo: sellerId)
+          .get();
+
+      return querySnapshot.docs.length;
+    } catch (e) {
+      print('Error getting total orders: $e');
+      return 0;
+    }
+  }
+
+  Future<double> getTotalSalesAmount(String sellerId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('orders')
+          .where('sellerId', isEqualTo: sellerId)
+          .get();
+
+      double totalSales = 0;
+
+      for (var doc in querySnapshot.docs) {
+        List<Map<String, dynamic>> products =
+        List<Map<String, dynamic>>.from(doc['products']);
+
+        for (var productData in products) {
+          if (productData.containsKey('salesPrice')) {
+            totalSales += (productData['salesPrice'] as num).toDouble();
+          }
+        }
+      }
+
+      return totalSales;
+    } catch (e) {
+      print('Error getting total sales amount: $e');
+      return 0;
+    }
+  }
+
+  Future<int> getTotalBuyers(String sellerId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('orders')
+          .where('sellerId', isEqualTo: sellerId)
+          .get();
+
+      Set<String> uniqueBuyers = Set<String>();
+
+      for (var doc in querySnapshot.docs) {
+        List<Map<String, dynamic>> products =
+        List<Map<String, dynamic>>.from(doc['products']);
+
+        for (var productData in products) {
+          if (productData.containsKey('buyerId')) {
+            uniqueBuyers.add(productData['buyerId']);
+          }
+        }
+      }
+
+      return uniqueBuyers.length;
+    } catch (e) {
+      print('Error getting total buyers: $e');
+      return 0;
+    }
+  }
+
+
+
+
+
+  }
+

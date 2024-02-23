@@ -53,6 +53,7 @@ dependencies:
   fluttertoast: ^8.0.3
   provider: ^6.1.1
   mailer: ^6.0.0
+  firebase_messaging:
 
 
 

@@ -186,24 +186,6 @@ class _AccountScreenState extends State<AccountScreen> {
             icon: Icon(Icons.logout, color: Colors.redAccent),
             onPressed: _logout,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return LoginSellerScreen();
-                }),
-              );
-            },
-            child: Text(
-              'Seller',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 20,
-              ),
-            ),
-          ),
         ],
       ),
       body: Padding(
@@ -290,6 +272,27 @@ class _AccountScreenState extends State<AccountScreen> {
                 }
               },
               oldValue: _userDetails?.address ?? '',
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return LoginSellerScreen();
+                    }),
+                  );
+                },
+                child: Text(
+                  'Become a Seller 🤵‍♂️',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: Colors.blue,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
             ),
           ],
         )

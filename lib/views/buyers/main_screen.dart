@@ -1,3 +1,4 @@
+import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:clickncart/views/buyers/nav_screens/account_screen.dart';
@@ -95,16 +96,42 @@ class _MainScreenState extends State<MainScreen> {
         return OrderScreen();
       case 3:
         return FutureBuilder<UserDetails?>(
-          // Assuming you have a method to fetch user details, modify it accordingly
           future: AuthController().fetchUserDetails(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return CartScreen(userDetails: snapshot.data!);
+              if (snapshot.data != null) {
+                UserDetails userDetails = snapshot.data!;
+                return CartScreen(userDetails: userDetails);
+              } else {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Please log in to view your cart.',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Navigate to the login screen
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                            return LoginScreen();
+                          }));
+                        },
+                        child: Text('Log In'),
+                      ),
+                    ],
+                  ),
+                );
+              }
             } else {
+              // Loading indicator while waiting for the future to complete
               return Center(child: CircularProgressIndicator());
             }
           },
         );
+
       case 4:
         return SearchScreen();
       case 5:

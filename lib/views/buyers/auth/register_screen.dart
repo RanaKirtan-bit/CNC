@@ -35,7 +35,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             _isLoading = false;
                       });
                });
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(
+                   builder: (context) => LoginScreen(), // Replace LoginScreen with your actual seller login screen
+                 ),
+               );
                return showSnack(context, 'Congratulations Registred Successfully');
+
 
           } else {
                 setState(() {
