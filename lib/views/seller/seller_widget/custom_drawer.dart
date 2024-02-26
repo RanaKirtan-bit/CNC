@@ -1,7 +1,9 @@
 //import 'package:clickncart/views/seller/seller_screens/past_orders_screen.dart';
+import 'package:clickncart/views/seller/seller_screens/seller_product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../provider/seller_provider.dart';
+import '../../buyers/nav_screens/store_screen.dart';
 import '../seller_screens/add_product_screen.dart';
 import '../seller_screens/product_screen.dart';
 import '../seller_screens/vendor_home.dart'; // Import your SellerProvider
@@ -71,6 +73,18 @@ class CustomDrawer extends StatelessWidget {
                       Navigator.push(
                           context, MaterialPageRoute(builder: (context) {
                         return AddProductScreen();
+                      }));
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.add),
+                    title: Text('show orders'),
+                    onTap: () {
+                      // Navigate to the screen where you can add a new product
+                      // Replace ProductAddScreen with the actual screen for adding products
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (context) {
+                        return SellerProductsPage(sellerId: 'Anpe2JAKiOgCEeJzFrEwfGLlxPx1');
                       }));
                     },
                   ),

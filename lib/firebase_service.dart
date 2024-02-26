@@ -292,7 +292,7 @@ class FirebaseService {
             soldProducts.add({
               'productName': productData['productName'],
               'sellerId': productData['sellerId'],
-              'buyerId': productData['buyerId'],
+              'buyerId': doc['buyerId'], // Fetch buyerId from the order document
               'salesPrice': productData['salesPrice'],
               // Add more fields as needed
             });
@@ -304,7 +304,7 @@ class FirebaseService {
       for (var product in soldProducts) {
         print('Product Name: ${product['productName']}');
         print('Sales Price: ${product['salesPrice']}');
-        print('Buyer: ${product['buyerId']}');
+        print('Buyer ID: ${product['buyerId']}');
         // Add more fields as needed
       }
 
@@ -315,6 +315,7 @@ class FirebaseService {
       return [];
     }
   }
+
 
 
   Future<int> getTotalOrders(String sellerId) async {
@@ -389,5 +390,4 @@ class FirebaseService {
 
 
 
-  }
-
+}
