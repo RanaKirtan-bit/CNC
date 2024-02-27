@@ -387,7 +387,31 @@ class FirebaseService {
   }
 
 
+  Future<Map<String, dynamic>> getProductDetailsById(String productId) async {
+    try {
+      DocumentSnapshot productSnapshot =
+      await FirebaseFirestore.instance.collection('products').doc(productId).get();
 
+      if (productSnapshot.exists) {
+        return productSnapshot.data() as Map<String, dynamic>;
+      } else {
+        return {}; // Return an empty map if the product is not found
+      }
+    } catch (error) {
+      print('Error getting product details: $error');
+      throw error;
+    }
+}
+
+  Future<Map<String, dynamic>?> getOrderDetailsById(String orderId) async {
+    try {
+      DocumentSnapshot orderSnapshot = await _firestore.collection('orders').doc(orderId).get();
+      return orderSnapshot.data() as Map<String, dynamic>?;
+    } catch (error) {
+      print('Error getting order details: $error');
+      return null;
+    }
+  }
 
 
 }

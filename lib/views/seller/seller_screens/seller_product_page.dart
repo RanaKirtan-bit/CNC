@@ -54,6 +54,7 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sold Products'),
+        backgroundColor: Colors.teal, // Change the app bar color
       ),
       body: _buildSoldProductsList(),
     );
@@ -69,32 +70,81 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
         String buyerId = soldProduct['buyerId'];
         Future<Map<String, dynamic>> buyerDetails = getBuyerDetails(buyerId);
 
-        return FutureBuilder<Map<String, dynamic>>(
-          future: buyerDetails,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error loading buyer details');
-            } else {
-              Map<String, dynamic> buyer = snapshot.data ?? {};
-              return ListTile(
-                title: Text(soldProduct['productName']),
-                subtitle: Column(
-                  children: [
-                    Text('Sales Price: \$${soldProduct['salesPrice']}'),
-                    Text('Buyer Name: ${buyer['address']}'), // Replace 'name' with actual field
-                    // Add more buyer details as needed
-                  ],
-                ),
-                onTap: () {
-                  // Handle item tap if needed
-                },
-              );
-            }
-          },
+        return Card(
+          margin: EdgeInsets.all(10),
+          elevation: 4,
+          child: FutureBuilder<Map<String, dynamic>>(
+            future: buyerDetails,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error loading buyer details: ${snapshot.error}');
+              } else {
+                Map<String, dynamic> buyer = snapshot.data ?? {};
+                String shopName = buyer['shopName'] ?? 'N/A'; // Default to 'N/A' if shopName is null
+
+                return ListTile(
+                  title: Text(
+                    soldProduct['productName'],
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sales Price: \$${soldProduct['salesPrice']}',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      Text(
+                        'Buyer Name: ${buyer['fullName']}',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                      Text(
+                        'Buyer\'s Delivery Address: ${buyer['address']}',
+                        style: TextStyle(color: Colors.deepOrange),
+                      ),
+                      // Add more buyer details as needed
+                    ],
+                  ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Buyer Information'),
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Full Name: ${buyer['fullName']}'),
+                              Text('Full Name: ${soldProduct['productName']}'),
+                              Text('Address: ${buyer['address']}'),
+                              // Add more buyer details as needed
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              }
+            },
+          ),
         );
       },
     );
   }
+
 }
