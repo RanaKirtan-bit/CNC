@@ -1,4 +1,5 @@
 import 'package:clickncart/controllers/auth_controller.dart';
+import 'package:clickncart/views/buyers/auth/login_screen.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/banner_widget.dart';
 import 'package:clickncart/views/buyers/nav_screens/widgets/category_text.dart';
 import 'package:clickncart/views/seller/seller_auth/login_screen.dart';
@@ -90,22 +91,68 @@ class WelcomeText extends StatelessWidget {
                   return CircularProgressIndicator();
                 }
                 if (snapshot.hasData) {
-                  return Text(
-                    '${snapshot.data}, What Are You\n Looking For 👀 ',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'Semi-Bold',
-                    ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${snapshot.data}, What Are You\n Looking For 👀 ',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Semi-Bold',
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      TextButton(
+                        onPressed: () {
+                          // Implement logout functionality
+                          AuthController().logOutAndDeleteData();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                          );
+                          // Replace with your logout logic
+                        },
+                        child: Text('Logout',
+                          style: TextStyle(
+                            fontSize: 22,
+                            wordSpacing: 2,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 }
-                return Text(
-                  'Guest, What Are You\n Looking For 👀 ',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: 'Semi-Bold',
-                  ),
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Guest, What Are You\n Looking For 👀 ',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Semi-Bold',
+                      ),
+                    ),
+                    SizedBox(width: 80),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to the login screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
+                      },
+                      child: Text('Login',
+                      style: TextStyle(
+                        fontSize: 22,
+                        wordSpacing: 2,
+                        color: Colors.blue,
+                      ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -115,5 +162,6 @@ class WelcomeText extends StatelessWidget {
     );
   }
 }
+
 
 

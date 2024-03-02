@@ -148,7 +148,7 @@ class _OrderScreenState extends State<OrderScreen> {
           children: [
             Text(
               product.productName!,
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 12),
             ),
             IconButton(
               icon: Icon(Icons.remove_red_eye),

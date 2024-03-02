@@ -276,4 +276,47 @@ class ProductProvider with ChangeNotifier{
       notifyListeners();
     }
   }
+
+  Future<void> updateProduct(int index, Map<String, dynamic> updatedProduct) async {
+    if (index >= 0 && index < productDataList.length) {
+      // Update locally
+      productDataList[index] = updatedProduct;
+      notifyListeners();
+
+      // Update in Firebase
+      try {
+        await _firestore.collection('products').doc(updatedProduct['documentId']).update(updatedProduct);
+        // You might want to replace 'products' with the actual name of your collection
+      } catch (e) {
+        print('Error updating product in Firebase: $e');
+        // Handle the error as needed
+      }
+    }
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    try {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference storageReference =
+      FirebaseStorage.instance.ref().child('product_images/$fileName');
+      UploadTask uploadTask = storageReference.putFile(imageFile);
+      TaskSnapshot storageTaskSnapshot = await uploadTask.whenComplete(() {});
+      String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      // Handle the error as needed
+      return '';
+    }
+  }
+
+  void updateProductImage(int index, String imageUrl) {
+    if (index >= 0 && index < productDataList.length) {
+      productDataList[index]['imageUrls'] = [imageUrl];
+      // Add logic to persist the changes if needed
+      notifyListeners();
+    }
+  }
+
+
 }
