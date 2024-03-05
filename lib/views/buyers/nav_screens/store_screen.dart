@@ -14,6 +14,8 @@ class OrderScreen extends StatefulWidget {
 class _OrderScreenState extends State<OrderScreen> {
   final FirebaseService _service = FirebaseService();
   List<LocalOrder.LocalOrder> orders = [];
+  String selectedCancellationReason = ' ' ;
+  int selectedCancellationReasonIndex = -1;
 
   @override
   void initState() {
@@ -27,9 +29,16 @@ class _OrderScreenState extends State<OrderScreen> {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
+        print('User UID: ${user.uid}');
+
         // Fetch past orders for the logged-in user
-        List<LocalOrder.LocalOrder>? userOrders =
-        await _service.getUserOrders(user.uid);
+        List<LocalOrder.LocalOrder>? userOrders = await _service.getUserOrders(user.uid);
+
+        if (userOrders != null) {
+          print('Fetched ${userOrders.length} orders');
+        } else {
+          print('No orders fetched');
+        }
 
         // Check if the widget is still mounted before calling setState
         if (mounted) {
@@ -158,6 +167,10 @@ class _OrderScreenState extends State<OrderScreen> {
               icon: Icon(Icons.delete),
               onPressed: () => _deleteOrder(order),
             ),
+            ElevatedButton(
+              onPressed: () => _cancelOrder(order, product),
+              child: Text('Cancel Order'),
+            ),
           ],
         ),
         subtitle: Column(
@@ -212,4 +225,84 @@ class _OrderScreenState extends State<OrderScreen> {
       },
     );
   }
+
+  void _cancelOrder(LocalOrder.LocalOrder order, Product product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Cancel Order'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Are you sure you want to cancel this order?'),
+                  SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.generate(
+                      cancellationReasons.length,
+                          (index) {
+                        return Row(
+                          children: [
+                            Radio<int>(
+                              value: index,
+                              groupValue: selectedCancellationReasonIndex,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedCancellationReasonIndex = value!;
+                                });
+                              },
+                            ),
+                            Text(cancellationReasons[index]),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Handle cancel order action
+                    _confirmCancelOrder(order, product);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+
+  void _confirmCancelOrder(LocalOrder.LocalOrder order, Product product) async {
+    try {
+      // Implement the logic to update the order status to cancelled in Firebase
+      await _service.cancelOrder(order.orderId, selectedCancellationReason);
+      // Reload the orders after cancellation
+      await _loadOrders();
+    } catch (e) {
+      print('Error cancelling order: $e');
+    }
+  }
+
+  final List<String> cancellationReasons = [
+    'Item out of stock',
+    'Changed my mind',
+    'Found a better deal',
+    'Other',
+  ];
+
 }

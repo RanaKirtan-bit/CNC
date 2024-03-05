@@ -10,6 +10,7 @@ class LocalOrder {
   late DateTime timestamp;
   late DateTime orderDate;
   late List<String> productNames;
+  late String status;
 
   // Named constructor
   LocalOrder({
@@ -21,6 +22,7 @@ class LocalOrder {
     required this.timestamp,
     required this.orderDate,
     required this.productNames,
+    required this.status,
   });
 
   // Factory method 'fromFirestore' to convert Firestore document to Order object
@@ -44,6 +46,8 @@ class LocalOrder {
       totalAmount: data['totalAmount'] ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       orderDate: (data['orderDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      status: data['status'] ?? 'defaultStatus',
+
       productNames: productNames,
     );
   }

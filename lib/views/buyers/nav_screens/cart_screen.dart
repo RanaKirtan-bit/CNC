@@ -357,7 +357,9 @@ class _CartScreenState extends State<CartScreen> {
         buyerId: widget.userDetails.buyerId,
         products: orderedProducts,
         paymentId: response.paymentId.toString(),
-        totalAmount: _calculateTotalPrice(), sellerId: '',
+        totalAmount: _calculateTotalPrice(),
+        sellerId: '',
+        status: 'active',
       );
 
       await sendMail(

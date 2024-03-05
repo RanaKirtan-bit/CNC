@@ -190,6 +190,7 @@ class FirebaseService {
     required String paymentId,
     required String totalAmount,
     required String sellerId,
+    required String status,
   }) async {
     try {
       // Assuming 'orders' is the name of the collection storing orders
@@ -207,6 +208,7 @@ class FirebaseService {
         'totalAmount': totalAmount,
         'timestamp': FieldValue.serverTimestamp(),
         'sellerId': sellerId,
+        'status':status,
       });
 
       print('Order created successfully');
@@ -295,6 +297,7 @@ class FirebaseService {
               'sellerId': productData['sellerId'],
               'buyerId': doc['buyerId'], // Fetch buyerId from the order document
               'salesPrice': productData['salesPrice'],
+              'status': doc['status'],
               // Add more fields as needed
             });
           }
@@ -414,6 +417,19 @@ class FirebaseService {
     }
   }
 
+  Future<void> cancelOrder(String orderId, String cancellationReason) async {
+    try {
+      // Update the order status to 'Cancelled' and store the cancellation reason
+      await _firestore.collection('orders').doc(orderId).update({
+        'status': 'Cancelled',
+        'cancellationReason': cancellationReason,
+      });
+    } catch (e) {
+      // Handle errors
+      print('Error cancelling order: $e');
+      throw e; // You may want to handle this error in your UI
+    }
+  }
 
 
 }

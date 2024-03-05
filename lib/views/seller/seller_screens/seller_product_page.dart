@@ -24,7 +24,7 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
   }
 
   Future<void> _loadSoldProducts() async {
-    String sellerId = widget.sellerId; // Use the sellerId passed to the widget
+    String sellerId = widget.sellerId;
     try {
       List<Map<String, dynamic>> soldProducts =
       await _firebaseService.getSellerSoldProducts(sellerId);
@@ -32,7 +32,6 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
         _soldProducts = soldProducts;
       });
     } catch (error) {
-      // Handle error
       print('Error loading sold products: $error');
     }
   }
@@ -43,7 +42,6 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
       await _firebaseService.getBuyerDetailsById(buyerId);
       return buyerDetails ?? {};
     } catch (error) {
-      // Handle error
       print('Error loading buyer details: $error');
       return {};
     }
@@ -51,22 +49,40 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Sold Products'),
-        backgroundColor: Colors.teal, // Change the app bar color
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Sold Products'),
+          backgroundColor: Colors.teal,
+          bottom: TabBar(
+            tabs: [
+              Tab(text: 'Active'), // Tab for 'Active' status
+              Tab(text: 'Cancelled'), // Tab for 'Cancelled' status
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // Tab View for 'Active' status
+            _buildSoldProductsList(status: 'active'),
+            // Tab View for 'Cancelled' status
+            _buildSoldProductsList(status: 'Cancelled'),
+          ],
+        ),
       ),
-      body: _buildSoldProductsList(),
     );
   }
 
-  Widget _buildSoldProductsList() {
-    return ListView.builder(
-      itemCount: _soldProducts.length,
-      itemBuilder: (context, index) {
-        Map<String, dynamic> soldProduct = _soldProducts[index];
+  Widget _buildSoldProductsList({required String status}) {
+    List<Map<String, dynamic>> filteredProducts = _soldProducts
+        .where((product) => product['status'] == status)
+        .toList();
 
-        // Fetch buyer details using buyerId
+    return ListView.builder(
+      itemCount: filteredProducts.length,
+      itemBuilder: (context, index) {
+        Map<String, dynamic> soldProduct = filteredProducts[index];
         String buyerId = soldProduct['buyerId'];
         Future<Map<String, dynamic>> buyerDetails = getBuyerDetails(buyerId);
 
@@ -82,7 +98,7 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                 return Text('Error loading buyer details: ${snapshot.error}');
               } else {
                 Map<String, dynamic> buyer = snapshot.data ?? {};
-                String shopName = buyer['shopName'] ?? 'N/A'; // Default to 'N/A' if shopName is null
+                String shopName = buyer['shopName'] ?? 'N/A';
 
                 return ListTile(
                   title: Text(
@@ -107,7 +123,10 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                         'Buyer\'s Delivery Address: ${buyer['address']}',
                         style: TextStyle(color: Colors.deepOrange),
                       ),
-                      // Add more buyer details as needed
+                      Text(
+                        'Order Status: ${soldProduct['status']}',
+                        style: TextStyle(color: Colors.purple),
+                      ),
                     ],
                   ),
                   onTap: () {
@@ -123,7 +142,6 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                               Text('Full Name: ${buyer['fullName']}'),
                               Text('Full Name: ${soldProduct['productName']}'),
                               Text('Address: ${buyer['address']}'),
-                              // Add more buyer details as needed
                             ],
                           ),
                           actions: [
@@ -146,5 +164,4 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
       },
     );
   }
-
 }

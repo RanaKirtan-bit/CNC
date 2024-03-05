@@ -368,7 +368,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            buyerId: _userDetails!.buyerId,
            products: products,
            paymentId: paymentId,
-           totalAmount: totalAmount, sellerId: widget.product.sellerId,
+           totalAmount: totalAmount,
+           sellerId: widget.product.sellerId,
+           status:'active',
          );
          sendMail(
            recipientEmail: _userDetails!.email,
