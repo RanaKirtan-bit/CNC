@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:clickncart/firebase_service.dart';
 import 'package:clickncart/models/order_model.dart' as LocalOrder;
+import 'package:intl/intl.dart';
 
 import '../../../models/order_model.dart';
 import '../../../models/product_model.dart';
@@ -83,7 +84,7 @@ class _OrderScreenState extends State<OrderScreen> {
             LocalOrder.LocalOrder order = orders[index];
             return Card(
               margin:
-              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              EdgeInsets.symmetric(vertical: 8, horizontal: 3),
               elevation: 4,
               child: ListTile(
                 title: Text(
@@ -108,7 +109,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Order Date: ${order.orderDate}',
+                      'Order Date: ${order.timestamp}',
                       style: TextStyle(fontSize: 14),
                     ),
                     SizedBox(height: 4),
@@ -148,8 +149,9 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   Widget _buildProductCard(LocalOrder.LocalOrder order, Product product) {
+    bool orderCancelled = order.status == 'Cancelled';
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
       elevation: 4,
       child: ListTile(
         title: Row(
@@ -167,10 +169,11 @@ class _OrderScreenState extends State<OrderScreen> {
               icon: Icon(Icons.delete),
               onPressed: () => _deleteOrder(order),
             ),
-            ElevatedButton(
-              onPressed: () => _cancelOrder(order, product),
-              child: Text('Cancel Order'),
-            ),
+            if (!orderCancelled)
+              IconButton(
+                icon: Icon(Icons.cancel), // Replace with a relevant cancel icon
+                onPressed: () => _cancelOrder(order, product),
+              ),
           ],
         ),
         subtitle: Column(
@@ -178,6 +181,11 @@ class _OrderScreenState extends State<OrderScreen> {
           children: [
             SizedBox(height: 4),
             // Other product details go here
+            if (orderCancelled)
+              Text(
+                'Order Cancelled',
+                style: TextStyle(fontSize: 14, color: Colors.red),
+              ),
           ],
         ),
       ),
@@ -271,8 +279,13 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle cancel order action
-                    _confirmCancelOrder(order, product);
+                    // Check if it's within 24 hours to allow cancellation
+                    if (_isWithin24Hours(order.timestamp)) {
+                      _confirmCancelOrder(order, product);
+                    } else {
+                      print('Cannot cancel order after 24 hours.');
+                      // You might want to show an error message or handle this case accordingly
+                    }
                     Navigator.pop(context);
                   },
                   child: Text('Confirm'),
@@ -285,18 +298,35 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 
+  // Helper method to check if the order is within 24 hours
+  bool _isWithin24Hours(DateTime orderDateTime) {
+    DateTime currentDateTime = DateTime.now();
+    Duration difference = currentDateTime.difference(orderDateTime);
+    return difference.inHours < 24;
+  }
+
+
+
 
 
   void _confirmCancelOrder(LocalOrder.LocalOrder order, Product product) async {
     try {
-      // Implement the logic to update the order status to cancelled in Firebase
-      await _service.cancelOrder(order.orderId, selectedCancellationReason);
-      // Reload the orders after cancellation
-      await _loadOrders();
+      // Ensure that a cancellation reason is selected
+      if (selectedCancellationReasonIndex != -1) {
+        String cancellationReason = cancellationReasons[selectedCancellationReasonIndex];
+        // Implement the logic to update the order status to cancelled in Firebase
+        await _service.cancelOrder(order.orderId, cancellationReason);
+        // Reload the orders after cancellation
+        await _loadOrders();
+      } else {
+        print('Please select a cancellation reason.');
+        // You might want to show an error message or handle this case accordingly
+      }
     } catch (e) {
       print('Error cancelling order: $e');
     }
   }
+
 
   final List<String> cancellationReasons = [
     'Item out of stock',

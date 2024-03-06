@@ -54,6 +54,7 @@ dependencies:
   provider: ^6.1.1
   mailer: ^6.0.0
   firebase_messaging:
+  intl:
 
 
 
