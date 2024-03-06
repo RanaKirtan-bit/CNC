@@ -431,5 +431,19 @@ class FirebaseService {
     }
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> getSellerSoldProductsStream(String sellerId) {
+    try {
+      return FirebaseFirestore.instance
+          .collection('orders')
+          .where('sellerId', isEqualTo: sellerId)
+          .snapshots();
+    } catch (e) {
+      // Handle errors
+      print('Error getting seller sold products stream: $e');
+      return Stream.empty();
+    }
+  }
+
+
 
 }

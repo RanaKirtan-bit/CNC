@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -24,17 +25,30 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
   }
 
   Future<void> _loadSoldProducts() async {
-    String sellerId = widget.sellerId;
     try {
-      List<Map<String, dynamic>> soldProducts =
-      await _firebaseService.getSellerSoldProducts(sellerId);
-      setState(() {
-        _soldProducts = soldProducts;
-      });
+      // Retrieve the currently logged-in user
+      User? user = FirebaseAuth.instance.currentUser;
+
+      // Check if the user is authenticated
+      if (user != null) {
+        // Get the seller ID from the authenticated user
+        String sellerId = user.uid;
+
+        // Fetch the seller's sold products using the seller ID
+        List<Map<String, dynamic>> soldProducts =
+        await _firebaseService.getSellerSoldProducts(sellerId);
+
+        setState(() {
+          _soldProducts = soldProducts;
+        });
+      } else {
+        print('User not authenticated');
+      }
     } catch (error) {
       print('Error loading sold products: $error');
     }
   }
+
 
   Future<Map<String, dynamic>> getBuyerDetails(String buyerId) async {
     try {

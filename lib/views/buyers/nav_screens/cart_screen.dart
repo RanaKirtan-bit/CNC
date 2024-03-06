@@ -353,14 +353,16 @@ class _CartScreenState extends State<CartScreen> {
 
 
       // Create the order in Firebase
-      await _service.createOrder(
-        buyerId: widget.userDetails.buyerId,
-        products: orderedProducts,
-        paymentId: response.paymentId.toString(),
-        totalAmount: _calculateTotalPrice(),
-        sellerId: '',
-        status: 'active',
-      );
+      for (Product product in orderedProducts) {
+        await _service.createOrder(
+          buyerId: widget.userDetails.buyerId,
+          products: [product],
+          paymentId: response.paymentId.toString(),
+          totalAmount: (product.salesPrice ?? 0 * product.quantity).toString(),
+          sellerId: product.sellerId ?? '',
+          status: 'active',
+        );
+      }
 
       await sendMail(
         recipientEmail: widget.userDetails.email,
