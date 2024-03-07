@@ -54,7 +54,10 @@ dependencies:
   provider: ^6.1.1
   mailer: ^6.0.0
   firebase_messaging:
+  smooth_star_rating_null_safety: ^1.0.4+2
   intl:
+
+
 
 
 

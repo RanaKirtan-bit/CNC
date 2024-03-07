@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../models/order_model.dart';
 import '../../../models/product_model.dart';
+import '../../../utils/show_snackBar.dart';
 
 class OrderScreen extends StatefulWidget {
   @override
@@ -284,6 +285,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       _confirmCancelOrder(order, product);
                     } else {
                       print('Cannot cancel order after 24 hours.');
+                      showSnack(context, 'Cannot cancel order after 24 hours.');
                       // You might want to show an error message or handle this case accordingly
                     }
                     Navigator.pop(context);
@@ -312,7 +314,7 @@ class _OrderScreenState extends State<OrderScreen> {
   void _confirmCancelOrder(LocalOrder.LocalOrder order, Product product) async {
     try {
       // Ensure that a cancellation reason is selected
-      if (selectedCancellationReasonIndex != -1) {
+      if (selectedCancellationReason.isNotEmpty) {
         String cancellationReason = cancellationReasons[selectedCancellationReasonIndex];
         // Implement the logic to update the order status to cancelled in Firebase
         await _service.cancelOrder(order.orderId, cancellationReason);
@@ -326,6 +328,7 @@ class _OrderScreenState extends State<OrderScreen> {
       print('Error cancelling order: $e');
     }
   }
+
 
 
   final List<String> cancellationReasons = [
