@@ -130,6 +130,10 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                         style: TextStyle(color: Colors.blue),
                       ),
                       Text(
+                        'Selected Size: ${soldProduct['selectedSize']}', // Update this line
+                        style: TextStyle(color: Colors.blue), // Update the color if needed
+                      ),
+                      Text(
                         'Buyer Name: ${buyer['fullName']}',
                         style: TextStyle(color: Colors.green),
                       ),

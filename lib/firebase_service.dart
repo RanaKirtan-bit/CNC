@@ -300,6 +300,7 @@ class FirebaseService {
               'buyerId': doc['buyerId'], // Fetch buyerId from the order document
               'salesPrice': productData['salesPrice'],
               'status': doc['status'],
+              'selectedSize': doc['selectedSize'],
               // Add more fields as needed
             });
           }
