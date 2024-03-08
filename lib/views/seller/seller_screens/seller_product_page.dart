@@ -154,8 +154,9 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text('Full Name: ${buyer['fullName']}'),
-                              Text('Full Name: ${soldProduct['productName']}'),
+                              Text('Product Name: ${soldProduct['productName']}'),
                               Text('Address: ${buyer['address']}'),
+                              Text('Size:${soldProduct['selectedSize']}'),
                             ],
                           ),
                           actions: [

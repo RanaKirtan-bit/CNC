@@ -71,7 +71,7 @@ class Product {
       reOrderLevel: json['reOrderLevel'] as int?,
       chargeShipping: json['chargeShipping'] as bool?,
       shippingCharge: json['shippingCharge'] as double?,
-      sizeList: List<String>.from(json['size'] as List<dynamic>? ?? []),
+      sizeList: List<String>.from(json['sizeList'] as List<dynamic>? ?? []),
     );
   }
 

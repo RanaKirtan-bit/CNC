@@ -191,6 +191,7 @@ class FirebaseService {
     required String totalAmount,
     required String sellerId,
     required String status,
+    required String selectedSize,
   }) async {
     try {
       // Assuming 'orders' is the name of the collection storing orders
@@ -209,6 +210,7 @@ class FirebaseService {
         'timestamp': FieldValue.serverTimestamp(),
         'sellerId': sellerId,
         'status':status,
+        'selectedSize':selectedSize,
       });
 
       print('Order created successfully');

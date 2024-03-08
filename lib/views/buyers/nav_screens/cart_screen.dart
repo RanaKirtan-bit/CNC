@@ -13,9 +13,9 @@ import '../../../controllers/user_controller.dart';
 
 class CartScreen extends StatefulWidget {
   final UserDetails userDetails;
+  final String? selectedSize;
 
-
-  const CartScreen({required this.userDetails});
+  const CartScreen({required this.userDetails,  this.selectedSize});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -165,6 +165,10 @@ class _CartScreenState extends State<CartScreen> {
                         SizedBox(height: 4),
                         Text(
                           'Price: Rs. ${product.salesPrice}',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Size: ${widget.selectedSize ?? 'not selected'}',
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 4),
@@ -361,6 +365,7 @@ class _CartScreenState extends State<CartScreen> {
           totalAmount: (product.salesPrice ?? 0 * product.quantity).toString(),
           sellerId: product.sellerId ?? '',
           status: 'active',
+          selectedSize: widget.selectedSize.toString(),
         );
       }
 

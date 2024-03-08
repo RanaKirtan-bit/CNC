@@ -14,6 +14,8 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+import 'cart_screen.dart';
+
 
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -33,7 +35,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
    final FirebaseService _service = FirebaseService();
   int? pageNumber = 0;
    late Razorpay _razorpay;
-
+    String? selectedSize;
 
 
    final AuthController _authController = AuthController();
@@ -72,6 +74,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     print('Regular Price: ${widget.product.regularPrice}');
     print('Product ID: ${widget.product.id}');
     print('Brand: ${widget.product.brand}');
+    print('Size: ${widget.product.sizeList}');
 
 
 
@@ -180,6 +183,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                   ),
                   SizedBox(height: 10,),
+                  Text('Size:' , style: TextStyle(fontSize: 18),),
+                  if (widget.product.sizeList != null && widget.product.sizeList!.isNotEmpty)
+                    Container(
+                      height: 50,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.product.sizeList!.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: EdgeInsets.all(8),
+                            width: 70,
+                            child: OutlinedButton(
+                              child: Text(widget.product.sizeList![index]),
+                              onPressed: () {
+                                setState(() {
+                                  selectedSize = widget.product.sizeList![index];
+                                });
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: selectedSize == widget.product.sizeList![index]
+                                    ? MaterialStateProperty.all(Colors.green) // Change to your desired color
+                                    : null,
+                              ),
+                            ),
+
+                          );
+                        },
+                      ),
+                    ),
+
+
+     SizedBox(height: 10,),
                   Row(
                     children: [
                       Icon(IconlyBold.star, color: Colors.red, size: 14,),
@@ -279,6 +314,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            salesPrice: widget.product.salesPrice,
            brand: widget.product.brand,
            sellerId: widget.product.sellerId,
+           sizeList: widget.product.sizeList,
            // Copy other fields as needed
          );
 
@@ -301,6 +337,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
            ScaffoldMessenger.of(context).showSnackBar(
              SnackBar(
                content: Text('Product added to cart!'),
+             ),
+           );
+           Navigator.push(
+             context,
+             MaterialPageRoute(
+               builder: (context) => CartScreen(
+                 userDetails: _userDetails!,
+                 selectedSize: selectedSize, // Pass the selected size
+               ),
              ),
            );
          }
@@ -367,6 +412,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
          await _service.createOrder(
            buyerId: _userDetails!.buyerId,
            products: products,
+           selectedSize:selectedSize.toString(),
            paymentId: paymentId,
            totalAmount: totalAmount,
            sellerId: widget.product.sellerId,
