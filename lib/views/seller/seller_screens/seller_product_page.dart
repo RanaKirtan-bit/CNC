@@ -15,7 +15,6 @@ class SellerProductsPage extends StatefulWidget {
 
 class _SellerProductsPageState extends State<SellerProductsPage> {
   final FirebaseService _firebaseService = FirebaseService();
-
   List<Map<String, dynamic>> _soldProducts = [];
 
   @override
@@ -26,15 +25,10 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
 
   Future<void> _loadSoldProducts() async {
     try {
-      // Retrieve the currently logged-in user
       User? user = FirebaseAuth.instance.currentUser;
 
-      // Check if the user is authenticated
       if (user != null) {
-        // Get the seller ID from the authenticated user
         String sellerId = user.uid;
-
-        // Fetch the seller's sold products using the seller ID
         List<Map<String, dynamic>> soldProducts =
         await _firebaseService.getSellerSoldProducts(sellerId);
 
@@ -48,7 +42,6 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
       print('Error loading sold products: $error');
     }
   }
-
 
   Future<Map<String, dynamic>> getBuyerDetails(String buyerId) async {
     try {
@@ -64,23 +57,22 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // Number of tabs
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Sold Products'),
-          backgroundColor: Colors.teal,
+          backgroundColor: Theme.of(context).primaryColor,
           bottom: TabBar(
             tabs: [
-              Tab(text: 'Active'), // Tab for 'Active' status
-              Tab(text: 'Cancelled'), // Tab for 'Cancelled' status
+              Tab(text: 'Active'),
+              Tab(text: 'Cancelled'),
             ],
+            indicatorColor: Colors.white,
           ),
         ),
         body: TabBarView(
           children: [
-            // Tab View for 'Active' status
             _buildSoldProductsList(status: 'active'),
-            // Tab View for 'Cancelled' status
             _buildSoldProductsList(status: 'Cancelled'),
           ],
         ),
@@ -103,23 +95,25 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
         return Card(
           margin: EdgeInsets.all(10),
           elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
           child: FutureBuilder<Map<String, dynamic>>(
             future: buyerDetails,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Text('Error loading buyer details: ${snapshot.error}');
               } else {
                 Map<String, dynamic> buyer = snapshot.data ?? {};
-                String shopName = buyer['shopName'] ?? 'N/A';
 
                 return ListTile(
                   title: Text(
                     soldProduct['productName'],
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 18,
                     ),
                   ),
                   subtitle: Column(
@@ -130,8 +124,8 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                         style: TextStyle(color: Colors.blue),
                       ),
                       Text(
-                        'Selected Size: ${soldProduct['selectedSize']}', // Update this line
-                        style: TextStyle(color: Colors.blue), // Update the color if needed
+                        'Selected Size: ${soldProduct['selectedSize']}',
+                        style: TextStyle(color: Colors.blue),
                       ),
                       Text(
                         'Buyer Name: ${buyer['fullName']}',
@@ -160,7 +154,7 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                               Text('Full Name: ${buyer['fullName']}'),
                               Text('Product Name: ${soldProduct['productName']}'),
                               Text('Address: ${buyer['address']}'),
-                              Text('Size:${soldProduct['selectedSize']}'),
+                              Text('Size: ${soldProduct['selectedSize']}'),
                             ],
                           ),
                           actions: [

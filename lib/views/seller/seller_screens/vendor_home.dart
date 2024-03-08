@@ -18,7 +18,6 @@ class _SellerHomeState extends State<SellerHome> {
   late FirebaseMessaging _firebaseMessaging;
   String selerId = FirebaseAuth.instance.currentUser!.uid;
 
-
   @override
   void initState() {
     super.initState();
@@ -38,8 +37,7 @@ class _SellerHomeState extends State<SellerHome> {
   Widget build(BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
-        String sellerId = selerId ; // Set the actual sellerId here
-
+        String sellerId = selerId; // Set the actual sellerId here
 
         return Scaffold(
           appBar: AppBar(
@@ -47,22 +45,27 @@ class _SellerHomeState extends State<SellerHome> {
             title: Text('Dashboard'),
           ),
           drawer: CustomDrawer(),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Seller's Statistics",
-                style: TextStyle(fontSize: 22),
-              ),
-              _buildStatCard(
-                title: 'Total Orders',
-                future: FirebaseService().getTotalOrders(sellerId),
-              ),
-              _buildStatCard(
-                title: 'Total Sales',
-                future: FirebaseService().getTotalSalesAmount(sellerId),
-              ),
-            ],
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Seller's Statistics",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                _buildStatCard(
+                  title: 'Total Orders',
+                  future: FirebaseService().getTotalOrders(sellerId),
+                ),
+                SizedBox(height: 16),
+                _buildStatCard(
+                  title: 'Total Sales',
+                  future: FirebaseService().getTotalSalesAmount(sellerId),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -72,10 +75,13 @@ class _SellerHomeState extends State<SellerHome> {
   Widget _buildStatCard({required String title, required Future<dynamic> future}) {
     return Card(
       elevation: 4,
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
@@ -93,7 +99,7 @@ class _SellerHomeState extends State<SellerHome> {
                   String statValue = snapshot.data.toString();
                   return Text(
                     statValue,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
                   );
                 }
               },
