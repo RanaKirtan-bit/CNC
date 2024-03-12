@@ -129,4 +129,3 @@ productQuery({category}) {
     toFirestore: (product, _) => product.toJson(),
   );
 }
-
