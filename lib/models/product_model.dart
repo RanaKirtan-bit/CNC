@@ -23,6 +23,9 @@ class Product {
   final double? shippingCharge;
   int quantity;
   final List<String>? sizeList;
+  List<double>? ratings;
+  double? averageRating;
+
 
   Product({
     required this.id,

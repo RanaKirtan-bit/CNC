@@ -26,6 +26,7 @@ class SubCategoryScreen extends StatelessWidget {
         }
 
         return GridView.builder(
+          physics: ScrollPhysics(),
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,

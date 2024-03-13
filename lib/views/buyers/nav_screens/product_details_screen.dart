@@ -9,11 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clickncart/models/product_model.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+import '../../../controllers/user_controller.dart';
 import 'cart_screen.dart';
 
 
@@ -36,10 +38,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int? pageNumber = 0;
    late Razorpay _razorpay;
     String? selectedSize;
+   double userRating = 0;
 
 
    final AuthController _authController = AuthController();
    UserDetails? _userDetails;
+   final UserController _userController = UserController();
 
    @override
    void initState() {
@@ -268,9 +272,30 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                   Divider(color: Colors.grey, thickness: 1,),
                   // Inside the Text widget where you are displaying Buyer ID
-                  Text('Address: ${_userDetails != null ? _userDetails!.address : 'Loading...'}')
+                  Text('Address: ${_userDetails != null ? _userDetails!.address : 'Loading...'}'),
 
+                  RatingBar.builder(
+                    initialRating: widget.product.averageRating ?? 0.0, // Use averageRating if available
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: false,
+                    itemCount: 5,
+                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                    itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                    onRatingUpdate: (rating) {
+                      setState(() {
+                        userRating = rating;
+                      });
+                    },
+                  ),
 
+                  // Submit Rating Button
+                  ElevatedButton(
+                    onPressed: () {
+                      submitRating(userRating);
+                    },
+                    child: Text('Submit Rating'),
+                  ),
 
                 ],
               ),
@@ -283,13 +308,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
 
             // Buy Now Button
-            ElevatedButton(
+            ElevatedButton(         //_userDetails!=null
               onPressed: () {
-                if(_userDetails!=null){
+                if (_userDetails!.address != null && _userDetails!.address!="" && _userDetails!.address!=" " && _userDetails!=null) {
+                  //_showDeliveryAddressDialog();
                   launchPayment();
-                }
-                else{
-                  showSnack(context, 'Please Make Login');
+                } else {
+                  _showAddressNotSetDialog();
                 }
 
               },
@@ -301,6 +326,113 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       ),
     );
   }
+
+
+   void _showDeliveryAddressDialog() {
+     showDialog(
+       context: context,
+       builder: (context) => AlertDialog(
+         title: Text('Delivery Address'),
+         content: Text(_userDetails!.address),
+         actions: [
+           TextButton(
+             onPressed: () => Navigator.pop(context),
+             child: Text('Close'),
+           ),
+         ],
+       ),
+     );
+   }
+
+   void _showAddressNotSetDialog() {
+     showDialog(
+       context: context,
+       builder: (context) => AlertDialog(
+         title: Text('Delivery Address not set'),
+         content: Text('Please add/update your delivery address before placing an order.'),
+         actions: [
+           TextButton(
+             onPressed: () {
+               Navigator.pop(context);
+               _showAddressEditDialog();
+             },
+             child: Text('Add/Update Address'),
+           ),
+           TextButton(
+             onPressed: () => Navigator.pop(context),
+             child: Text('Close'),
+           ),
+         ],
+       ),
+     );
+   }
+
+   void _showAddressEditDialog() {
+     _userController.addressController.text = _userDetails!.address;
+     showDialog(
+       context: context,
+       builder: (context) => AlertDialog(
+         title: Text('Edit Address'),
+         content: TextFormField(
+           controller: _userController.addressController,
+           decoration: InputDecoration(labelText: 'Enter your address'),
+         ),
+         actions: [
+           TextButton(
+             onPressed: () async {
+               await _userController.updateUserDetails(
+                 fullName: _userDetails!.fullName,
+                 phoneNumber:_userDetails!.phoneNumber,
+                 address: _userController.addressController.text,
+               );
+               Navigator.pop(context);
+             },
+             child: Text('Save Address'),
+           ),
+           TextButton(
+             onPressed: () => Navigator.pop(context),
+             child: Text('Cancel'),
+           ),
+         ],
+       ),
+     );
+   }
+
+
+   void submitRating(double userRating) {
+     // Update the ratings list in the Product object
+     widget.product.ratings ??= [];
+     widget.product.ratings!.add(userRating);
+
+     // Update the average rating in the database
+     updateAverageRating(widget.productId!, widget.product.ratings!);
+
+     // Optionally, show a message to the user
+     Fluttertoast.showToast(
+       msg: 'Rating submitted successfully!',
+       toastLength: Toast.LENGTH_SHORT,
+       gravity: ToastGravity.CENTER,
+       timeInSecForIosWeb: 1,
+       backgroundColor: Colors.green,
+       textColor: Colors.black,
+       fontSize: 16.0,
+     );
+   }
+
+   Future<void> updateAverageRating(String productId, List<double> ratings) async {
+     try {
+       // Calculate average rating
+       double averageRating = ratings.isNotEmpty ? ratings.reduce((a, b) => a + b) / ratings.length : 0.0;
+
+       // Update the average rating in the product document
+       await FirebaseFirestore.instance
+           .collection('products')
+           .doc(productId)
+           .update({'averageRating': averageRating});
+     } catch (e) {
+       print('Error updating average rating: $e');
+     }
+   }
 
 
    void _addToCart() async {

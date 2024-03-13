@@ -61,7 +61,7 @@ class HomeProductList extends StatelessWidget {
                     Text(
                       product.productName!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
