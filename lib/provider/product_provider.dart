@@ -201,7 +201,7 @@ class ProductProvider with ChangeNotifier{
     }
   }
 
-  Future<void> searchProducts(String query) async {
+  Future<void> searchProducts(String query, {double? ratingFilter}) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -217,6 +217,12 @@ class ProductProvider with ChangeNotifier{
               .toLowerCase()
               .contains(query.toLowerCase()))
           .toList();
+
+      if (ratingFilter != null) {
+        _searchResults = _searchResults.where((product) =>
+        product.averageRating != null && product.averageRating! >= ratingFilter)
+            .toList();
+      }
 
       _isLoading = false;
       notifyListeners();

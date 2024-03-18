@@ -146,9 +146,11 @@ class _GeneralTabState extends State<GeneralTab> with AutomaticKeepAliveClientMi
                 label: 'Enter Product Name',
                 inputType: TextInputType.name,
                 onChanged: (value) {
-                  provider.gerFormData(
-                    productName: value,
-                  );
+                  setState(() {
+                    provider.gerFormData(
+                      productName: value,
+                    );
+                  });
                 },
               ),
 

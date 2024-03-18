@@ -50,6 +50,7 @@ class Product {
     this.shippingCharge,
     this.sizeList,
     this.quantity = 1,
+    this.averageRating,
   });
 
   factory Product.fromJson(Map<String, Object?> json) {
@@ -75,6 +76,7 @@ class Product {
       chargeShipping: json['chargeShipping'] as bool?,
       shippingCharge: json['shippingCharge'] as double?,
       sizeList: List<String>.from(json['sizeList'] as List<dynamic>? ?? []),
+      averageRating: (json['averageRating'] as num?)?.toDouble(),
     );
   }
 
@@ -99,6 +101,7 @@ class Product {
       'chargeShipping': chargeShipping,
       'shippingCharge': shippingCharge,
       'sizeList': sizeList,
+      'averageRating':averageRating
       // Add other fields as needed
     };
   }

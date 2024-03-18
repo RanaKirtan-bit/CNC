@@ -4,6 +4,8 @@ import 'package:clickncart/views/buyers/nav_screens/product_details_screen.dart'
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 
+import '../product_rating_page.dart';
+
 class HomeProductList extends StatelessWidget {
   final String? category;
 
@@ -43,15 +45,15 @@ class HomeProductList extends StatelessWidget {
               },
               child: Container(
                 padding: const EdgeInsets.all(8),
-                height: 80,
-                width: 80,
+                height: 200,
+                width: 200,
                 child: Column(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: Container(
-                        height: 180,
-                        width: 180,
+                        height: 150,
+                        width: 150,
                         child: CachedNetworkImage(
                           imageUrl: product.imageUrls![0],
                           fit: BoxFit.contain,
@@ -62,6 +64,11 @@ class HomeProductList extends StatelessWidget {
                       product.productName!,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                    //SizedBox(height: 2),
+                    // Display average rating as stars
+                    RatingStars(
+                      averageRating: product.averageRating ?? 0,
                     ),
                   ],
                 ),

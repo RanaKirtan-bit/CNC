@@ -1,7 +1,7 @@
-import 'package:clickncart/views/buyers/nav_screens/product_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
-
+import 'package:clickncart/views/buyers/nav_screens/product_details_screen.dart';
 import '../../../models/product_model.dart';
 import '../../../provider/product_provider.dart';
 
@@ -14,6 +14,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  double? _selectedRatingFilter;
 
   @override
   void dispose() {
@@ -27,6 +28,20 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+
+  void _applyRatingFilter(double? rating) {
+    setState(() {
+      _selectedRatingFilter = rating;
+    });
+    // Call searchProducts method with the current search query and the selected rating filter
+    Provider.of<ProductProvider>(context, listen: false).searchProducts(
+      _searchController.text,
+      ratingFilter: rating,
+    );
+    Navigator.pop(context); // Close the filter dialog
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +54,41 @@ class _SearchScreenState extends State<SearchScreen> {
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Filter by Rating'),
+                    content: RatingBar.builder(
+                      initialRating: _selectedRatingFilter ?? 0,
+                      minRating: 0,
+                      maxRating: 5,
+                      allowHalfRating: true,
+                      itemSize: 40,
+                      itemBuilder: (context, _) => Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: _applyRatingFilter,
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          _applyRatingFilter(null); // Reset filter
+                        },
+                        child: Text('Clear'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(Icons.filter_list, color: Colors.black,),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -78,6 +128,16 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? productProvider.products
                       : productProvider.searchResults;
 
+// Apply rating filter if it's not null
+                  if (_selectedRatingFilter != null) {
+                    products = products.where((product) {
+                      return product.averageRating != null &&
+                          (product.averageRating! as double) >= _selectedRatingFilter!;
+                    }).toList();
+
+                  }
+
+
                   return GridView.builder(
                     padding: EdgeInsets.all(16),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -94,7 +154,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProductDetailsScreen(product: product),
+                              builder: (context) =>
+                                  ProductDetailsScreen(product: product),
                             ),
                           );
                         },
@@ -108,12 +169,15 @@ class _SearchScreenState extends State<SearchScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                                borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(15)),
                                 child: AspectRatio(
                                   aspectRatio: 1,
                                   child: product.imageUrls!.isEmpty
-                                      ? Image.asset('assets/images/placeholder.png', fit: BoxFit.cover)
-                                      : Image.network(product.imageUrls![0], fit: BoxFit.cover),
+                                      ? Image.asset('assets/images/placeholder.png',
+                                      fit: BoxFit.cover)
+                                      : Image.network(product.imageUrls![0],
+                                      fit: BoxFit.cover),
                                 ),
                               ),
                               Padding(
