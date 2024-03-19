@@ -196,7 +196,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      '\$${product.salesPrice ?? product.regularPrice}',
+                                      'Rs. ${product.salesPrice ?? product.regularPrice}',
                                       style: TextStyle(color: Colors.green),
                                     ),
                                   ],

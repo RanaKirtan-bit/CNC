@@ -300,13 +300,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ],
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                _addToCart();
-              },
-              child: Text('Add to Cart'),
-            ),
-
+            Row(
+              children: [
+                SizedBox(width: 10,),
+               ElevatedButton(
+                onPressed: () {
+                  _addToCart();
+                },
+                child: Text('Add to Cart'),
+              ),
+            SizedBox(width: 100,),
             // Buy Now Button
             ElevatedButton(         //_userDetails!=null
               onPressed: () {
@@ -320,7 +323,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               },
               child: Text('Buy Now'),
             ),
-
+              ],
+            ),
           ],
         ),
       ),
