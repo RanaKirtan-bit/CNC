@@ -23,6 +23,7 @@ class Product {
   final double? shippingCharge;
   int quantity;
   final List<String>? sizeList;
+  String? selectedSize;
   List<double>? ratings;
   double? averageRating;
 
@@ -49,6 +50,7 @@ class Product {
     this.chargeShipping,
     this.shippingCharge,
     this.sizeList,
+    this.selectedSize,
     this.quantity = 1,
     this.averageRating,
   });

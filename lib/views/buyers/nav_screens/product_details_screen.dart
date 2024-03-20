@@ -314,8 +314,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ElevatedButton(         //_userDetails!=null
               onPressed: () {
                 if (_userDetails!.address != null && _userDetails!.address!="" && _userDetails!.address!=" " && _userDetails!=null) {
-                  //_showDeliveryAddressDialog();
-                  launchPayment();
+                  _showDeliveryAddressDialog();
+                  //launchPayment();
                 } else {
                   _showAddressNotSetDialog();
                 }
@@ -332,20 +332,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
 
-   void _showDeliveryAddressDialog() {
-     showDialog(
+   void _showDeliveryAddressDialog() async {
+     bool confirmed = await showDialog(
        context: context,
        builder: (context) => AlertDialog(
          title: Text('Delivery Address'),
          content: Text(_userDetails!.address),
          actions: [
            TextButton(
-             onPressed: () => Navigator.pop(context),
-             child: Text('Close'),
+             onPressed: () => Navigator.pop(context, false),
+             child: Text('Cancel'),
+           ),
+           TextButton(
+             onPressed: () => Navigator.pop(context, true),
+             child: Text('Confirm'),
            ),
          ],
        ),
      );
+
+     if (confirmed) {
+       launchPayment();
+     }
    }
 
    void _showAddressNotSetDialog() {
@@ -390,8 +398,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                  address: _userController.addressController.text,
                );
                Navigator.pop(context);
+               ScaffoldMessenger.of(context).showSnackBar(
+                 SnackBar(
+                   content: Text('Details updated successfully'),
+                   backgroundColor: Colors.green,
+                 ),
+               );
              },
              child: Text('Save Address'),
+
            ),
            TextButton(
              onPressed: () => Navigator.pop(context),
@@ -638,6 +653,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       <p><strong>Name:</strong> $Name</p>
       <p>$mailMessage</p>
       <h5 style="text-align: center;">Thank you for Purchase $productName  with ClickNCart. Enjoy your day!</h5>
+    <h5 style="text-align: center;"> Your order will be deliver into 3 working days* </h5>
+    <h5 style="text-align: center;"> You can not cancel your order after 24 hours* </h5>
         <h6 style="text-align: center;">If you cancel  Your Order call this Custome service Number +91 9978427943 or +91 9313226480</h6>
         <h6 style="text-align: center;">Copyright © 2024 ClickNCart Private Limited (formerly known as ClickNCart Shopping Private Limited), India. All rights reserved.</h6>
     ''';

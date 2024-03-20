@@ -22,28 +22,38 @@ class _LoginScreenState extends State<LoginScreen> {
   late String email;
 
   late String password;
+  bool _isObscure = true; // Initially password is obscure
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 
-
-  _loginUsers() async{
-        if(_formKey.currentState!.validate()) {
-                String res = await _authController.loginUsers(email, password);
-                var userDoc = await _firestore.collection('buyers').doc(_auth.currentUser!.uid).get();
-                if (res == 'success' ) {
-                  return Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return MainScreen();
-                      }));
-                } else {
-                      return showSnack(context, res);
-                }
-
-        } else {
-              return showSnack(context, 'Something Went Wrong....');
-        }
+  _togglePasswordVisibility() {
+    setState(() {
+      _isObscure = !_isObscure;
+    });
   }
+
+
+
+  _loginUsers() async {
+    if (_formKey.currentState!.validate()) {
+      String res = await _authController.loginUsers(email, password);
+      if (res == 'success') {
+        return Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) {
+            return MainScreen();
+          }),
+        );
+      } else {
+        return showSnack(context, res); // Display error message
+      }
+    } else {
+      return showSnack(context, 'Something Went Wrong....');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,24 +72,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 180.0),
-                    child: TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context){
-                        return LoginSellerScreen();
-                      }));
-                },
-                      child: Text(
-                        'Become a Seller',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade900,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
                   Text(
                     'Login Costomer''s account',
                     style: TextStyle(
@@ -139,9 +131,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       onChanged: ((value) {
                         password = value;
                       }),
+                      obscureText: _isObscure, // Toggle password visibility
                       decoration: InputDecoration(
-                          labelText: 'Enter password',
-                        prefixIcon: Icon(Icons.lock, color: Colors.black,),
+                        labelText: 'Enter password',
+                        prefixIcon: Icon(Icons.lock, color: Colors.black),
+                        suffixIcon: IconButton(
+                          onPressed: _togglePasswordVisibility,
+                          icon: Icon(
+                            _isObscure ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -213,7 +213,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     ],
                   ),
-
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context){
+                          return LoginSellerScreen();
+                        }));
+                      },
+                      child: Text(
+                        'Become a Seller 🤵‍♂',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade900,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

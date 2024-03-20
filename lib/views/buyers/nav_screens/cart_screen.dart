@@ -1,4 +1,5 @@
 
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:clickncart/models/product_model.dart';
@@ -25,7 +26,7 @@ class _CartScreenState extends State<CartScreen> {
   final FirebaseService _service = FirebaseService();
   final UserController _userController = UserController();
   List<Product> cartItems = [];
-   late Razorpay _razorpay;
+  late Razorpay _razorpay;
 
   @override
   void initState() {
@@ -205,7 +206,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              _showDeliveryAddressDialog();
+              //_showDeliveryAddressDialog();
               _showAddressEditDialog();
             },
             child: Text('Add/Update Delivery Address'),
@@ -227,7 +228,9 @@ class _CartScreenState extends State<CartScreen> {
                 ElevatedButton(
                   onPressed: (){
                     if (widget.userDetails.address != null && widget.userDetails.address!="" && widget.userDetails.address!=" ") {
-                      launchPayment();
+                      _showDeliveryAddressDialog();
+                      //launchPayment();
+
                     } else {
                       _showAddressNotSetDialog();
                     }
@@ -243,26 +246,34 @@ class _CartScreenState extends State<CartScreen> {
 
             ),
           ),
-              ],
-            ),
-          );
+        ],
+      ),
+    );
   }
 
 
-  void _showDeliveryAddressDialog() {
-    showDialog(
+  void _showDeliveryAddressDialog() async {
+    bool confirmed = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Delivery Address'),
         content: Text(widget.userDetails.address),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Confirm'),
           ),
         ],
       ),
     );
+
+    if (confirmed) {
+      launchPayment();
+    }
   }
 
   void _showAddressNotSetDialog() {
@@ -307,6 +318,12 @@ class _CartScreenState extends State<CartScreen> {
                 address: _userController.addressController.text,
               );
               Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Details updated successfully'),
+                  backgroundColor: Colors.green,
+                ),
+              );
             },
             child: Text('Save Address'),
           ),
@@ -450,6 +467,7 @@ class _CartScreenState extends State<CartScreen> {
       <tr>
         <th>Product Name</th>
         <th>Quantity</th>
+        <th> Amount </th>
       </tr>
   ''';
 
@@ -457,10 +475,13 @@ class _CartScreenState extends State<CartScreen> {
     for (Product product in products) {
       String productName = product.productName ?? 'N/A';
       String qty = product.quantity?.toString() ?? '1'; // Replace with your actual field name for the image URL
+      String salesPrice = product.salesPrice != null ? product.salesPrice.toString() : product.regularPrice.toString();
+
       productTable += '''
       <tr>
         <td>$productName</td>
         <td>$qty</td>
+        <td>$salesPrice </td>
       </tr>
     ''';
     }
@@ -475,6 +496,8 @@ class _CartScreenState extends State<CartScreen> {
     <p><strong>App Name:</strong> $appName</p>
     <p><strong>Name:</strong> $name</p>
     <p>$mailMessage</p>
+    <h5 style="text-align: center;"> Your order will be deliver into 3 working days* </h5>
+    <h5 style="text-align: center;"> You can not cancel your order after 24 hours* </h5>
     <h6 style="text-align: center;">If you cancel Your Order call this Customer service Number +91 9978427943 or +91 9313226480</h6>
     <h6 style="text-align: center;">Copyright © 2024 ClickNCart Private Limited (formerly known as ClickNCart Shopping Private Limited), India. All rights reserved.</h6>
   ''';
