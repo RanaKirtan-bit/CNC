@@ -105,15 +105,36 @@ class WelcomeText extends StatelessWidget {
                       SizedBox(height: 15),
                       TextButton(
                         onPressed: () {
-                          // Implement logout functionality
-                          AuthController().logOutAndDeleteData();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Logout'),
+                              content: Text('Are you sure you want to logout?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context); // Close the dialog
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Implement logout functionality
+                                    AuthController().logOutAndDeleteData();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                                    );
+                                    // Replace with your logout logic
+                                  },
+                                  child: Text('Logout'),
+                                ),
+                              ],
+                            ),
                           );
-                          // Replace with your logout logic
                         },
-                        child: Text('Logout',
+                        child: Text(
+                          'Logout',
                           style: TextStyle(
                             fontSize: 22,
                             wordSpacing: 2,
@@ -144,12 +165,13 @@ class WelcomeText extends StatelessWidget {
                           MaterialPageRoute(builder: (context) => LoginScreen()),
                         );
                       },
-                      child: Text('Login',
-                      style: TextStyle(
-                        fontSize: 22,
-                        wordSpacing: 2,
-                        color: Colors.blue,
-                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 22,
+                          wordSpacing: 2,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ],
@@ -162,6 +184,7 @@ class WelcomeText extends StatelessWidget {
     );
   }
 }
+
 
 
 
